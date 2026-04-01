@@ -70,6 +70,7 @@ def predict():
             acceptance=result["acceptance"],
             rejection=result["rejection"],
             risk_level=result["risk_level"],
+            top_features=result["top_features"],
         )
     except Exception as e:
         current_app.logger.error(f"Prediction error: {str(e)}")
