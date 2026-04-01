@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 from .routes import main
 from .services.prediction_service import load_pipeline
 import logging
@@ -38,12 +38,11 @@ def create_app():
     #Error Handlers
     @app.errorhandler(404)
     def not_found_error(error):
-        return "Page Not Found", 404
-
+        return render_template("error.html", message="Page not found."), 404
 
     @app.errorhandler(500)
     def internal_error(error):
         app.logger.error(f"Server Error: {error}")
-        return "Internal Server Error", 500
+        return render_template("error.html", message="Internal server error. Please try again."), 500
 
     return app

@@ -7,9 +7,10 @@ based on applicant financial data. Built as a graduation project at Palestine Ah
 
 ## Overview
 
-GoCredi takes seven applicant inputs and returns an approval decision with a
-probability breakdown, displayed as a doughnut chart. The backend is a scikit-learn
-pipeline (preprocessing + KNN classifier) served through a Flask web application.
+GoCredi takes ten applicant inputs and returns an approval decision with a probability
+breakdown, a risk tier (Low / Medium / High), and the top three most influential model
+factors. The backend is a scikit-learn Random Forest pipeline served through a Flask
+web application, with both a web UI and a JSON API endpoint.
 
 **Authors:** Othman Muhammad Al-Obayyat · Rahaf Ihsan Adeelah · Saja Shehada
 
@@ -20,32 +21,35 @@ pipeline (preprocessing + KNN classifier) served through a Flask web application
 | Layer | Technology |
 |---|---|
 | Web framework | Flask 3.1.3 |
-| ML pipeline | scikit-learn 1.6.1 |
+| ML pipeline | scikit-learn 1.6.1, imbalanced-learn 0.12.4 |
 | Data handling | pandas 3.0.1, numpy 2.4.2 |
 | Serialization | joblib 1.5.3 |
 | Frontend | Jinja2, custom CSS, Chart.js, Font Awesome |
+| Currency ticker | er-api.com (live exchange rates) |
 
 ---
 
 ## Project Structure
 
 ```
-GoCredi/
+GoCreadi/
 ├── credit_card_app/          # Flask application
 │   ├── app/
-│   │   ├── __init__.py       # App factory
-│   │   ├── routes.py         # URL routes
-│   │   ├── services/         # Prediction logic
+│   │   ├── __init__.py       # App factory, pipeline loading, logging, error handlers
+│   │   ├── routes.py         # URL routes (web + JSON API)
+│   │   ├── validators.py     # Server-side input validation
+│   │   ├── services/
+│   │   │   └── prediction_service.py  # predict_credit(), feature importance
 │   │   ├── templates/        # Jinja2 HTML templates
-│   │   └── static/           # CSS, images, flags
+│   │   └── static/           # CSS, images, flag SVGs
 │   ├── config.py
 │   ├── requirements.txt
 │   └── run.py
 ├── model_artifacts/
-│   └── pipeline.pkl          # Trained scikit-learn pipeline
+│   └── pipeline.pkl          # Trained scikit-learn pipeline (6.4 MB)
 ├── notebooks/
-│   └── credit_approval_model.ipynb  # ML training notebook
-└── data/                     # Raw data (not committed — too large)
+│   └── credit_approval_model.ipynb  # Full ML training notebook
+└── data/                     # Raw CSV files (not committed — ~67 MB)
 ```
 
 ---
@@ -54,8 +58,9 @@ GoCredi/
 
 > **Python version required: 3.11**
 > The trained `pipeline.pkl` was serialized with scikit-learn 1.6.1 on Python 3.11.
-> Loading it with a different Python or scikit-learn version will raise a
-> deserialization error. See [Environment Notes](#environment-notes) below.
+> Loading it with a different scikit-learn version will raise a deserialization error.
+> If Python 3.11 is unavailable, retrain the model using the notebook and update
+> `requirements.txt` with your current environment's pinned versions.
 
 ```bash
 # 1. Create a virtual environment with Python 3.11
@@ -70,7 +75,7 @@ source credit_card_app/venv/bin/activate
 # 3. Install dependencies
 pip install -r credit_card_app/requirements.txt
 
-# 4. Run the app (from the repo root)
+# 4. Run the app (from any directory)
 python credit_card_app/run.py
 ```
 
@@ -80,61 +85,101 @@ The app will be available at `http://127.0.0.1:5000`
 
 ## Input Features
 
-The model uses seven features:
+The model uses ten features (Set B):
 
-| Field | Description | Values |
-|---|---|---|
-| Gender | Applicant gender | M / F |
-| Own Car | Car ownership | Y / N |
-| Education | Education level | Higher education, Secondary, etc. |
-| Annual Income | Total annual income | Numeric |
-| Age | Applicant age in years | Numeric |
-| Years Employed | Employment duration | Numeric |
-| Family Members | Family size | Numeric |
+| Field | Description | Type | Values |
+|---|---|---|---|
+| Gender | Applicant gender | Categorical | M / F |
+| Own Car | Car ownership | Categorical | Y / N |
+| Own Property | Property ownership | Categorical | Y / N |
+| Education | Education level | Categorical | Higher education, Secondary, etc. |
+| Income Type | Employment category | Categorical | Working, Pensioner, Student, etc. |
+| Family Status | Marital status | Categorical | Married, Single, etc. |
+| Annual Income | Total yearly income | Numeric | > 0 |
+| Age | Applicant age | Numeric | 18–100 |
+| Years Employed | Employment duration | Numeric | 0–60 |
+| Family Members | Household size | Numeric | 1–20 |
 
 ---
 
-## Environment Notes
+## Result Output
 
-### Known compatibility issue
+Each prediction returns:
 
-The `model_artifacts/pipeline.pkl` was built with:
-- Python 3.11
-- scikit-learn 1.6.1
-- joblib 1.5.3
+- **Decision** — Approved or Not Approved
+- **Approval probability** — displayed as a percentage and doughnut chart
+- **Risk tier** — Low (≥70%), Medium (40–69%), High (<40%)
+- **Top 3 model factors** — the features with the highest impact on the decision
 
-If your environment has a different version of scikit-learn, loading the pipeline
-will raise an error similar to:
+---
+
+## API
+
+### Health check
 
 ```
-Can't get attribute '_RemainderColsList' on sklearn.compose._column_transformer
+GET /health
+→ {"status": "ok"}
 ```
 
-**Resolution:** Use Python 3.11 and install the exact versions in `requirements.txt`.
-The notebook `notebooks/credit_approval_model.ipynb` can be used to retrain and
-export a new pipeline compatible with your current environment after cleanup.
+### Predict (JSON)
+
+```
+POST /api/predict
+Content-Type: application/json
+
+{
+  "gender": "M",
+  "own_car": "Y",
+  "own_realty": "N",
+  "education": "Higher education",
+  "income_type": "Working",
+  "family_status": "Married",
+  "income": "150000",
+  "age": "35",
+  "years_employed": "8",
+  "family_members": "3"
+}
+```
+
+Response:
+
+```json
+{
+  "prediction": 1,
+  "risk_level": "Low",
+  "acceptance": 84.2,
+  "rejection": 15.8,
+  "top_features": ["Annual Income", "Years Employed", "Age"]
+}
+```
+
+- `prediction`: `1` = approved, `0` = not approved
+- `acceptance` / `rejection`: probabilities summing to 100
+- `top_features`: global model feature importances (Random Forest), not per-prediction SHAP values
 
 ---
 
 ## ML Notebook
 
-The notebook `notebooks/credit_approval_model.ipynb` contains the full training
-pipeline:
-- Data loading and merging from two CSV sources
-- Feature engineering (AGE, YEARS_EMPLOYED from raw day counts)
-- Outlier removal (IQR method, training set only)
-- Preprocessing via ColumnTransformer (StandardScaler + OneHotEncoder)
-- Class balancing via SMOTE
-- Model comparison (Random Forest, KNN)
-- Pipeline export to `model_artifacts/pipeline.pkl`
+The notebook `notebooks/credit_approval_model.ipynb` contains the full training pipeline:
 
-> **Note:** The notebook requires cleanup before retraining. See `CLAUDE.md` for details.
+- Data loading and merging from two CSV sources
+- Feature engineering (AGE, YEARS_EMPLOYED converted from raw day counts)
+- Outlier removal (IQR method, training set only)
+- Preprocessing via ColumnTransformer (StandardScaler + OneHotEncoder with `handle_unknown='ignore'`)
+- Class balancing via SMOTE inside an ImbPipeline (applied only during training folds)
+- Feature selection experiment comparing 7, 10, and 14 feature sets
+- Model comparison (Random Forest vs KNN)
+- 5-fold StratifiedKFold cross-validation
+- RandomizedSearchCV hyperparameter tuning (n_iter=10)
+- Final pipeline export to `model_artifacts/pipeline.pkl`
 
 ---
 
 ## Data
 
-Raw data files are not committed to this repository (combined ~67MB).
+Raw data files are not committed to this repository (combined ~67 MB).
 
 | File | Description | Source |
 |---|---|---|

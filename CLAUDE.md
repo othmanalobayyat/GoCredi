@@ -21,10 +21,10 @@ served through a Flask web application.
 | Layer | Technology |
 |---|---|
 | Web framework | Flask 3.1.3 (application factory + Blueprints) |
-| ML pipeline | scikit-learn 1.6.1 (ColumnTransformer + Pipeline) |
+| ML pipeline | scikit-learn 1.6.1 (ImbPipeline: preprocessor → SMOTE → RF) |
+| Class balancing | imbalanced-learn 0.12.4 / SMOTE |
 | Serialization | joblib 1.5.3 |
 | Data handling | pandas 3.0.1, numpy 2.4.2 |
-| Class balancing | imbalanced-learn / SMOTE (notebook only) |
 | Frontend | Jinja2 templates, custom CSS, Chart.js, Font Awesome |
 | Currency API | er-api.com (live exchange rates on index page) |
 
@@ -35,7 +35,7 @@ served through a Flask web application.
 ```
 GoCreadi/                              ← repo root
 ├── CLAUDE.md                          ← this file
-├── README.md                          ← GitHub portfolio page (to be written)
+├── README.md                          ← GitHub portfolio page
 ├── .gitignore
 │
 ├── credit_card_app/                   ← Flask application (canonical, do not restructure)
@@ -48,19 +48,20 @@ GoCreadi/                              ← repo root
 │   └── app/
 │       ├── __init__.py                ← app factory: loads pipeline, logging, error handlers
 │       ├── routes.py                  ← all routes via Blueprint named `main`
+│       ├── validators.py              ← server-side input validation (validate_form)
 │       ├── services/
-│       │   └── prediction_service.py  ← load_pipeline() and predict_credit()
+│       │   └── prediction_service.py  ← load_pipeline(), predict_credit(), _get_top_features()
 │       ├── static/
-│       │   ├── css/style.css          ← all styling (636 lines, do not rewrite)
+│       │   ├── css/style.css          ← all styling (~688 lines, do not rewrite)
 │       │   └── img/                   ← logos, favicon, 10 country flag SVGs
 │       └── templates/
 │           ├── base.html              ← Jinja2 base template
 │           ├── index.html             ← landing page with currency ticker
-│           ├── form.html              ← prediction input form
-│           ├── result.html            ← prediction result with Chart.js doughnut
+│           ├── form.html              ← prediction input form (10 fields, Set B)
+│           ├── result.html            ← prediction result with Chart.js doughnut + risk + top features
 │           ├── about.html             ← model explanation page
 │           ├── aboutus.html           ← team page
-│           ├── contact.html           ← contact form
+│           ├── contact.html           ← contact form (JS fetch, no page reload)
 │           ├── error.html             ← error display page
 │           └── partials/
 │               ├── navbar.html        ← reusable navigation component
@@ -77,7 +78,7 @@ GoCreadi/                              ← repo root
 │   └── credit_record.csv              ← 15MB credit history data
 │
 └── archive/                           ← local only, gitignored, never commit
-    └── ML/                            ← 8 old notebooks, 7 experiment pkl dirs, old csvs
+    └── ML/                            ← old notebooks, experiment pkl dirs, old csvs
 ```
 
 ---
@@ -94,16 +95,7 @@ Loading it with any other scikit-learn version raises:
 Can't get attribute '_RemainderColsList' on sklearn.compose._column_transformer
 ```
 
-**Available Python on this machine:** Python 3.13 (system) and Python 3.10 — neither works.
-**Python 3.11 must be installed separately** before the app can run.
-
-### Venv status: broken
-
-The existing `credit_card_app/venv/` was created by a different user account
-(`C:\Users\ome20\...`). That path no longer exists on this machine. The venv's
-`python.exe` is dead. Do not use it.
-
-### To recreate the venv correctly:
+### To set up the venv:
 
 ```bash
 # 1. Install Python 3.11 from python.org (add to PATH)
@@ -124,9 +116,8 @@ python credit_card_app/run.py
 
 ### Alternative: retrain with current Python
 
-If Python 3.11 is not available, the pipeline must be retrained with the current
-environment (Python 3.13 + scikit-learn 1.8.0) after the notebook cleanup is done.
-See the ML Notebook Rules section. After retraining, update `requirements.txt` with:
+If Python 3.11 is not available, retrain the pipeline using the notebook with your
+current environment, then update `requirements.txt`:
 ```bash
 pip freeze > credit_card_app/requirements.txt
 ```
@@ -135,12 +126,10 @@ pip freeze > credit_card_app/requirements.txt
 
 ## Running the App
 
-The app can now be run from **any directory** — path resolution uses `__file__` in
-`app/__init__.py` to locate `model_artifacts/pipeline.pkl` and `logs/` as absolute
-paths relative to the source files, not the working directory.
+Path resolution uses `__file__` in `app/__init__.py` — the app can be launched from
+any directory.
 
 ```bash
-# From anywhere, as long as the venv is active:
 python credit_card_app/run.py
 # → http://127.0.0.1:5000
 ```
@@ -150,58 +139,89 @@ python credit_card_app/run.py
 ## Flask App Rules
 
 ### Architecture
-- The app uses the **application factory pattern** — `create_app()` in `app/__init__.py`
-- Routes are registered as a **Blueprint** named `main` — do not switch to a flat `register_routes(app)` pattern
-- The ML pipeline is loaded **once at startup** into `app.config["PIPELINE"]`
-- Never load the pipeline inside a route function — it would reload on every request
+- Application factory pattern — `create_app()` in `app/__init__.py`
+- Routes registered as Blueprint named `main` — do not switch to flat `register_routes(app)`
+- ML pipeline loaded **once at startup** into `app.config["PIPELINE"]`
+- Never load the pipeline inside a route function
 
 ### What lives where
-- All prediction logic: `app/services/prediction_service.py` — keep it there
-- All route handlers: `app/routes.py` — keep them there
+- Prediction logic: `app/services/prediction_service.py`
+- Route handlers: `app/routes.py`
+- Input validation: `app/validators.py`
 - Config values: `config.py` → `Config` class
-- Model path: `"model_artifacts/pipeline.pkl"` in `app/__init__.py` — do not change without updating this file
+
+### Routes
+
+| Route | Method | Returns |
+|---|---|---|
+| `/` | GET | index.html (landing page) |
+| `/form` | GET | form.html (input form) |
+| `/predict` | POST | result.html or error.html |
+| `/about` | GET | about.html |
+| `/aboutus` | GET | aboutus.html |
+| `/contact` | GET | contact.html |
+| `/contact` | POST | 200 empty (JS-handled) |
+| `/health` | GET | `{"status": "ok"}` |
+| `/api/predict` | POST | JSON prediction response |
 
 ### `predict_credit()` contract
-The function signature is:
+
 ```python
 predict_credit(form_data, pipeline) -> dict
 ```
-It returns a dict with **exactly these keys**:
+
+Returns:
 ```python
 {
-    "prediction": int,       # 0 = rejected, 1 = approved
-    "acceptance": float,     # e.g. 87.3 (percentage)
-    "rejection": float       # e.g. 12.7 (percentage)
+    "prediction": int,        # 0 = rejected, 1 = approved
+    "acceptance": float,      # e.g. 87.3 (percentage)
+    "rejection": float,       # e.g. 12.7 (percentage)
+    "risk_level": str,        # "Low" | "Medium" | "High"
+    "top_features": list[str] # top 3 feature labels, may be [] if RF not available
 }
 ```
-`result.html` depends on these exact key names. Do not rename them.
 
-### Input features — exact mapping (pipeline depends on this)
+Risk thresholds: acceptance ≥ 70% → Low, ≥ 40% → Medium, < 40% → High.
+
+`result.html` depends on all of these key names. Do not rename them.
+
+### Input features — Set B (10 features, pipeline depends on this exactly)
+
 | HTML form field | DataFrame column | Expected type | Example |
 |---|---|---|---|
 | `gender` | `CODE_GENDER` | str | `"M"` or `"F"` |
 | `own_car` | `FLAG_OWN_CAR` | str | `"Y"` or `"N"` |
-| `education` | `NAME_EDUCATION_TYPE` | str (categorical) | `"Higher education"` |
+| `own_realty` | `FLAG_OWN_REALTY` | str | `"Y"` or `"N"` |
+| `education` | `NAME_EDUCATION_TYPE` | str | `"Higher education"` |
+| `income_type` | `NAME_INCOME_TYPE` | str | `"Working"` |
+| `family_status` | `NAME_FAMILY_STATUS` | str | `"Married"` |
 | `income` | `AMT_INCOME_TOTAL` | float | `120000.0` |
 | `age` | `AGE` | int | `30` |
 | `years_employed` | `YEARS_EMPLOYED` | int | `5` |
 | `family_members` | `CNT_FAM_MEMBERS` | int | `3` |
 
-The column names and types must match exactly what the pipeline's ColumnTransformer
-was trained on. Changing any name will cause a silent prediction failure or crash.
+Column names and types must match exactly what the pipeline's ColumnTransformer was
+trained on. Changing any name will break the pipeline silently or raise a KeyError.
 
 ### Templates
-- All templates extend `base.html` via Jinja2 inheritance (`{% extends "base.html" %}`)
-- `result.html` expects: `prediction` (int), `acceptance` (float), `rejection` (float)
+- `result.html` expects: `prediction`, `acceptance`, `rejection`, `risk_level`, `top_features`
 - `error.html` expects: `message` (str)
 - Do not add inline styles to templates — all styling belongs in `static/css/style.css`
-- Do not restructure the `partials/` folder — `navbar.html` and `ticker.html` are included by `base.html`
+- Do not restructure the `partials/` folder
+
+### Validation (`app/validators.py`)
+
+`validate_form(form_data) -> list[str]` validates all 10 fields.
+Returns an empty list if valid. Called by both `/predict` and `/api/predict`.
+
+Numeric bounds: income > 0 and ≤ 10M, age 18–100, years_employed 0–60, family_members 1–20.
 
 ### Dependencies
-- `Flask==3.1.3` — do not downgrade (3.x has breaking API changes from 2.x)
-- `scikit-learn==1.6.1` — **must match the version used when `pipeline.pkl` was saved**. A version mismatch will raise a deserialization error when loading the model.
+- `Flask==3.1.3` — do not downgrade
+- `scikit-learn==1.6.1` — must match the version used when `pipeline.pkl` was saved
+- `imbalanced-learn==0.12.4` — required for notebook training (ImbPipeline + SMOTE)
 - `joblib==1.5.3` — same constraint as scikit-learn
-- If you retrain and save a new pipeline, update `requirements.txt` to match your current environment versions
+- If you retrain, update `requirements.txt` with `pip freeze`
 
 ---
 
@@ -209,154 +229,123 @@ was trained on. Changing any name will cause a silent prediction failure or cras
 
 **Active notebook:** `notebooks/credit_approval_model.ipynb`
 
-**Do not run any notebook in `archive/`** — they contain data leakage bugs and
-broken cell ordering. They are kept for reference only.
+**Do not run any notebook in `archive/`** — they contain data leakage bugs and broken
+cell ordering. Reference only.
 
-### Known issues that must be fixed before retraining
+### Notebook state (post-cleanup)
 
-These are pre-existing problems in the current notebook, carried over from the
-experimental version. Fix them before any retraining session:
+The notebook has been cleaned up. The following issues were fixed:
+- Scrambled experimental cells (double encoding, data leakage, second train_test_split) — deleted
+- Redundant standalone scaler — removed
+- Preprocessor double-fit — fixed (only `fit_transform` on training data, `transform` on test)
+- Data paths corrected to `"../data/..."` for running from `notebooks/` directory
+- ImbPipeline imported from `imblearn.pipeline`
 
-**1. Scrambled experimental section (approximately cells 52–63)**
-These cells are leftover experiments that were never cleaned up:
-- `X = df.iloc[:, :-1]` re-assigns `X` from the SMOTE-balanced dataframe (wrong — overwrites the correctly-defined 7-feature X)
-- `pd.get_dummies` is called on already-encoded data (double encoding)
-- `LabelEncoder.fit_transform` is called on `X_test` directly (data leakage — must only `.transform` test data, never `.fit_transform`)
-- A second `train_test_split` is run on the balanced dataframe (test set contains synthetic SMOTE samples, inflating all metrics)
-- **Action:** Delete these cells entirely before running any training.
+### Feature set: Set B (10 features)
 
-**2. Preprocessor is fit twice (cells ~37 and ~39)**
-- Cell ~37: `preprocessor.fit(X_train)` — saves preprocessor to disk at this point
-- Cell ~39: `preprocessor.fit_transform(X_train_clean)` — refits on the cleaner outlier-removed data
-- The saved `preprocessor.pkl` (from cell 37) is fit on different data than what the model was trained on.
-- **Action:** Remove cell ~37's `.fit()` call. Keep only the `fit_transform` in cell ~39.
+Chosen over Set A (7 features) and Set C (14 features) after controlled comparison.
+Set C's OCCUPATION_TYPE had 31% unknowns — excluded.
 
-**3. Redundant standalone scaler**
-- A `StandardScaler` is defined and fit separately after the `ColumnTransformer`.
-- This is not needed — `StandardScaler` is already inside the `ColumnTransformer` for numerical columns.
-- The saved `pipeline.pkl` (cell ~96) incorrectly chains: preprocessor → scaler → model. The scaler step was fit on transformed+SMOTE data, not raw input. This makes the pipeline non-functional for real input.
-- **Action:** Remove the standalone `scaler` variable and its `.fit_transform` call. Do not include it in the final Pipeline.
-
-**4. Inflated accuracy metrics (~98% RF, ~95% KNN)**
-- These scores come from evaluating on a test set that was split from the SMOTE-balanced dataframe (i.e., the test set contains synthetic samples).
-- Real-world accuracy on unseen raw data will be lower (expect ~79–93% depending on model).
-- **Action:** Always evaluate on `X_test_transformed` — the hold-out from the original first `train_test_split` (before SMOTE), transformed by the preprocessor only.
+```python
+numerical_cols = ['AMT_INCOME_TOTAL', 'AGE', 'YEARS_EMPLOYED', 'CNT_FAM_MEMBERS']
+categorical_cols = ['CODE_GENDER', 'FLAG_OWN_CAR', 'FLAG_OWN_REALTY',
+                    'NAME_EDUCATION_TYPE', 'NAME_INCOME_TYPE', 'NAME_FAMILY_STATUS']
+```
 
 ### Correct pipeline construction for deployment
 
-This is the target structure every retraining session must produce:
-
 ```python
-from sklearn.pipeline import Pipeline
+from imblearn.pipeline import Pipeline as ImbPipeline
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
-from sklearn.neighbors import KNeighborsClassifier  # or RandomForestClassifier
-
-numerical_cols = ['AMT_INCOME_TOTAL', 'AGE', 'YEARS_EMPLOYED', 'CNT_FAM_MEMBERS']
-categorical_cols = ['CODE_GENDER', 'FLAG_OWN_CAR', 'NAME_EDUCATION_TYPE']
+from sklearn.ensemble import RandomForestClassifier
+from imblearn.over_sampling import SMOTE
 
 preprocessor = ColumnTransformer([
     ('num', StandardScaler(), numerical_cols),
-    ('cat', OneHotEncoder(drop='first'), categorical_cols)
+    ('cat', OneHotEncoder(drop='first', handle_unknown='ignore'), categorical_cols)
 ])
 
-pipeline = Pipeline([
+rf_pipeline = ImbPipeline([
     ('preprocessor', preprocessor),
-    ('clf', knn)           # classifier trained on preprocessed + resampled data
+    ('smote', SMOTE(random_state=42)),
+    ('clf', RandomForestClassifier(n_estimators=100, random_state=42))
 ])
 
 # Save to exactly this path — this is what the Flask app loads
 import joblib, os
-os.makedirs("model_artifacts", exist_ok=True)
-joblib.dump(pipeline, "model_artifacts/pipeline.pkl")
+os.makedirs("../model_artifacts", exist_ok=True)
+joblib.dump(rf_pipeline, "../model_artifacts/pipeline.pkl")
 ```
 
+**ImbPipeline ensures SMOTE runs only during `fit()`, not during `predict()`.**
 **No separate scaler. No separate preprocessor file. One pipeline file only.**
 
-### SMOTE placement rule
-
-SMOTE must only be applied to training data, never before the train-test split:
+### Training workflow (correct order)
 
 ```python
-# Step 1: split first
+# 1. Split first (before SMOTE, before outlier removal)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
 
-# Step 2: remove outliers from training only
+# 2. Remove outliers from training only
 X_train_clean = remove_outliers_iqr(X_train.copy(), numerical_cols)
 y_train_clean = y_train.loc[X_train_clean.index]
 
-# Step 3: preprocess training data
-X_train_transformed = preprocessor.fit_transform(X_train_clean)
-X_test_transformed = preprocessor.transform(X_test)   # transform only, never fit
+# 3. Fit the ImbPipeline on training data (SMOTE applied internally)
+rf_pipeline.fit(X_train_clean, y_train_clean)
 
-# Step 4: SMOTE on transformed training data only
-smote = SMOTE(random_state=42)
-X_train_resampled, y_train_resampled = smote.fit_resample(X_train_transformed, y_train_clean)
-
-# Step 5: train classifier on resampled data
-knn.fit(X_train_resampled, y_train_resampled)
-
-# Step 6: evaluate on ORIGINAL test set (no SMOTE)
-y_pred = knn.predict(X_test_transformed)
+# 4. Evaluate on ORIGINAL test set (no SMOTE — ImbPipeline skips it at predict time)
+y_pred = rf_pipeline.predict(X_test)
 ```
 
----
+### Evaluation metrics (imbalanced classification)
 
-## Known Bugs (fix before next release)
-
-| # | Bug | File | Line | Fix |
-|---|---|---|---|---|
-| 1 | `/contact` POST renders `thank_you.html` which does not exist → `TemplateNotFound` crash on every contact form submission | `routes.py` | 38 | Create `templates/thank_you.html` or replace with a redirect |
-| 2 | No server-side input validation on `/predict` | `routes.py` | `/predict` route | Add `app/validators.py` from the `GoCreadi-Project Final` reference in `archive/` |
-| 3 | 404 and 500 error handlers return plain strings instead of rendered templates | `app/__init__.py` | 32–40 | Return `render_template("error.html", message=...)` |
-| 4 | ~~`model_artifacts/` path was relative~~ | `app/__init__.py` | — | **Fixed** — now uses `__file__`-relative absolute path |
-| 5 | ~~`js/` folder was empty~~ | `static/js/` | — | **Fixed** — `.gitkeep` added |
-| 6 | ~~`logs/` missing after clone~~ | `logs/` | — | **Fixed** — `.gitkeep` added, `.gitignore` uses `*.log` |
+Use these four metrics — accuracy alone is misleading on imbalanced data:
+- ROC-AUC
+- Macro F1
+- Precision (class 0 = bad credit)
+- Recall (class 0 = bad credit)
 
 ---
 
-## Approved Merge Plan (not yet applied)
+## Known Issues
 
-From `archive/ML/GoCreadi-Project Final` → `credit_card_app`:
-
-| Step | Action | Risk |
+| # | Issue | Status |
 |---|---|---|
-| 1 | Create `app/validators.py` — server-side field validation | None — new file |
-| 2 | Edit `app/routes.py` — add `validate_form()` call before prediction in `/predict` | Low |
-| 3 | Create `app/templates/thank_you.html` — fix contact route crash | None — new file |
-| 4 | (Optional) Extract `app/model_loader.py` — fix path if done | Low |
-
-Apply these changes **after** notebook cleanup and model retraining are complete.
+| 1 | `/contact` POST crashed with `TemplateNotFound: thank_you.html` | **Fixed** — returns `("", 200)`; JS handles success display |
+| 2 | No server-side validation on `/predict` | **Fixed** — `app/validators.py` added |
+| 3 | 404/500 handlers returned plain strings | **Fixed** — now render `error.html` |
+| 4 | `model_artifacts/` path was relative to working directory | **Fixed** — uses `__file__`-relative absolute path |
+| 5 | `logs/` missing after clone | **Fixed** — `.gitkeep` added, `.gitignore` uses `*.log` |
 
 ---
 
 ## Development Workflow Rules
 
-These rules apply to all code changes, human or AI-assisted:
-
-1. **Incremental changes only.** One logical change per session. Do not refactor and add features at the same time.
-2. **Read before editing.** Never suggest or apply changes to a file without reading its current content first.
-3. **Test the app after every change.** Run `python run.py` from the repo root and verify the home page loads before committing.
-4. **Do not restructure the Flask app.** The Blueprint pattern, folder layout, and template inheritance are intentional. Do not flatten them.
-5. **Do not change column names.** The pipeline was serialized with specific feature names. Changing any of the 7 column names in `prediction_service.py` will break model loading silently.
-6. **Do not add `random_state` to production code.** `random_state` belongs only in the notebook. The Flask app calls `pipeline.predict()` — no randomness involved.
-7. **Do not unpin dependencies** in `requirements.txt`. The pickle-based model is version-sensitive. Unpinning can break deserialization on any new environment.
-8. **Notebook changes do not auto-update the app.** After retraining, you must manually copy the new `pipeline.pkl` to `model_artifacts/` and restart the Flask app.
+1. **Incremental changes only.** One logical change per session.
+2. **Read before editing.** Never modify a file without reading it first.
+3. **Test after every change.** Run `python credit_card_app/run.py` and verify the home page loads.
+4. **Do not restructure the Flask app.** Blueprint pattern and folder layout are intentional.
+5. **Do not change column names.** The 10 Set B column names in `prediction_service.py` must match the trained pipeline exactly.
+6. **Do not add `random_state` to production code.** It belongs only in the notebook.
+7. **Do not unpin dependencies.** The pickle-based model is version-sensitive.
+8. **Notebook changes do not auto-update the app.** After retraining, manually copy the new `pipeline.pkl` to `model_artifacts/` and restart.
 9. **Never commit to `main` directly for non-trivial changes.** Use feature branches.
-10. **Archive is read-only.** Files in `archive/` are for reference only. Do not run, edit, or import from them.
+10. **Archive is read-only.** Do not run, edit, or import from `archive/`.
 
 ---
 
 ## Strict Do-Not-Break Rules
 
-These things work right now. Do not touch them unless the task explicitly requires it:
+These are working and correct. Do not touch unless the task explicitly requires it:
 
-- `app/__init__.py` — pipeline loading, logging setup, blueprint registration
-- `app/services/prediction_service.py` — the 7-feature DataFrame construction
-- `model_artifacts/pipeline.pkl` — the serialized model (do not overwrite until a new trained model is verified)
-- `app/templates/result.html` — Chart.js doughnut chart depends on `acceptance` and `rejection` variables
+- `app/__init__.py` — pipeline loading, logging setup, blueprint registration, error handlers
+- `app/services/prediction_service.py` — the 10-feature DataFrame construction and feature importance
+- `app/validators.py` — all 10 field validations
+- `model_artifacts/pipeline.pkl` — do not overwrite until a new trained model is verified
+- `app/templates/result.html` — Chart.js doughnut depends on `acceptance` and `rejection` variables
 - `app/templates/base.html` — all other templates inherit from this
-- `app/static/css/style.css` — 636 lines, do not rewrite
+- `app/static/css/style.css` — do not rewrite
 - `requirements.txt` — pinned versions are intentional
 
 ---
@@ -381,6 +370,4 @@ git commit -m "Initial commit: GoCredi Flask app with trained pipeline"
 
 **Branch strategy:**
 - `main` — always runnable, always clean
-- `feature/notebook-cleanup` — fixing the notebook before retraining
-- `feature/validators` — adding server-side input validation
-- `feature/model-retrain` — new pipeline after notebook is fixed
+- `feature/model-retrain` — new pipeline after notebook changes
