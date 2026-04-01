@@ -73,13 +73,30 @@
         {% endif %}
       </div>
       {% if top_features %}
-      <div style="max-width: 480px; margin: 20px auto 0; text-align: left;">
-        <p style="font-size: 13px; color: #999; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px;">
-          Top factors in this evaluation
+      <div style="max-width: 480px; margin: 20px auto 0; text-align: left">
+        <p
+          style="
+            font-size: 13px;
+            color: #999;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+          "
+        >
+          Most influential model factors
         </p>
-        <ul style="list-style: none; padding: 0; margin: 0;">
+        <ul style="list-style: none; padding: 0; margin: 0">
           {% for feature in top_features %}
-          <li style="padding: 8px 12px; margin-bottom: 6px; background: #f0f8ff; border-radius: 8px; font-size: 15px; color: #333;">
+          <li
+            style="
+              padding: 8px 12px;
+              margin-bottom: 6px;
+              background: #f0f8ff;
+              border-radius: 8px;
+              font-size: 15px;
+              color: #333;
+            "
+          >
             {{ loop.index }}. {{ feature }}
           </li>
           {% endfor %}
