@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}About the GoCredi Model{% endblock %}
+{% set show_ticker = True %}
+
+{% block content %}
+<div class="container">
+  <h2 style="text-align:center;">About the GoCredi Model</h2>
+
+  <p>
+    GoCredi is a smart application that helps individuals determine the likelihood of their credit card application being approved based on their personal and financial data.
+  </p>
+
+  <h3>🔍 How does the model work?</h3>
+  <p>
+    The system relies on machine learning algorithms such as:
+    <ul>
+      <li>K-Nearest Neighbors</li>
+      <li>Random Forest</li>
+      <li>Voting Ensemble</li>
+    </ul>
+    These algorithms are trained using real credit card application data, and the most accurate model is selected to provide the best prediction.
+  </p>
+
+  <h3>⚙️ What do we need for prediction?</h3>
+  <p>
+    Once the data is entered into the model, the system analyzes it internally using the trained model and provides the result instantly.
+  </p>
+</div>
+{% endblock %}

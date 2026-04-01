@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Your Result | GoCredi</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+</head>
+
+<body>
+  <nav class="navbar">…</nav>
+
+  <div class="container" style="text-align: center;">
+    <h2>🔍 Evaluation Result</h2>
+
+    {% if prediction == 1 %}
+    <h3 style="color: #00c853;">✅ Congratulations! Your approval chances are high 👍</h3>
+    <p>We recommend proceeding with the official credit card application.</p>
+    {% else %}
+    <h3 style="color: #d32f2f;">❌ Unfortunately, your approval chances are low</h3>
+    <p>We suggest improving your income or employment duration to increase your chances.</p>
+    {% endif %}
+
+    <!-- Doughnut Chart -->
+    <canvas id="resultChart" style="margin-top: 30px; max-width:400px; margin:auto;"></canvas>
+
+    <div style="margin-top: 30px;">
+      <a href="/form" class="start-btn">
+        <i class="fas fa-rotate-right"></i>  Try Again
+      </a>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    const ctx = document.getElementById('resultChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Rejection', 'Approval'],
+        datasets: [{
+          data: [{{ rejection }}, {{ acceptance }}],
+      backgroundColor: ['#d32f2f', '#00c853'],
+      borderWidth: 1
+    }]
+      },
+      options: {
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: { font: { size: 14 } }
+        }
+      }
+    }
+    });
+  </script>
+</body>
+
+</html>

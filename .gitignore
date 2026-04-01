@@ -1,0 +1,96 @@
+# =============================================================================
+# GoCredi — .gitignore
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Python
+# -----------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+*.egg
+
+# -----------------------------------------------------------------------------
+# Virtual environment
+# -----------------------------------------------------------------------------
+venv/
+.venv/
+env/
+ENV/
+
+# -----------------------------------------------------------------------------
+# Environment variables / secrets
+# -----------------------------------------------------------------------------
+.env
+.env.*
+*.secret
+
+# -----------------------------------------------------------------------------
+# Flask runtime output
+# Note: we use *.log instead of logs/ so that logs/.gitkeep is committed.
+# This ensures the logs/ directory exists after a fresh clone,
+# preventing a crash in app/__init__.py which writes to logs/app.log.
+# -----------------------------------------------------------------------------
+*.log
+instance/
+
+# -----------------------------------------------------------------------------
+# Jupyter
+# -----------------------------------------------------------------------------
+.ipynb_checkpoints/
+**/.ipynb_checkpoints/
+
+# -----------------------------------------------------------------------------
+# Data files (too large and/or not source code)
+# -----------------------------------------------------------------------------
+data/
+*.csv
+*.xlsx
+*.xls
+
+# -----------------------------------------------------------------------------
+# ML experiment artifacts
+#
+# All .pkl files are ignored by default.
+# ONLY model_artifacts/pipeline.pkl is allowed through.
+#
+# IMPORTANT: model_artifacts/ directory itself is NOT ignored here.
+# If the directory were ignored, the !negation below would silently fail —
+# git cannot un-ignore files inside an ignored directory.
+#
+# Removed: model*/ — that pattern matched model_artifacts/ as a directory,
+# which blocked the !negation from working.
+# -----------------------------------------------------------------------------
+*.pkl
+!model_artifacts/pipeline.pkl
+
+# Ignore old experiment folders
+archive/
+ML/
+
+# -----------------------------------------------------------------------------
+# OS-generated files
+# -----------------------------------------------------------------------------
+.DS_Store
+.DS_Store?
+Thumbs.db
+desktop.ini
+ehthumbs.db
+
+# -----------------------------------------------------------------------------
+# IDEs
+# -----------------------------------------------------------------------------
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# -----------------------------------------------------------------------------
+# Git patch files (local only)
+# -----------------------------------------------------------------------------
+*.patch

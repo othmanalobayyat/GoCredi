@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Contact Us | GoCredi</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='img/favicon.ico') }}?v=2">
+</head>
+
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="logo">
+      <img src="{{ url_for('static', filename='img/logo-white.png') }}" alt="GoCredi Logo">
+      <span style="font-weight: bold; color: #FFF; font-size: 22px;">GoCredi</span>
+    </div>
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li><a href="/about">About CrediCard</a></li>
+      <li><a href="/aboutus">About Us</a></li>
+      <li><a href="/contact">Contact Us</a></li>
+    </ul>
+  </nav>
+
+  <!-- Contact Form -->
+  <div class="container">
+    <h2 style="text-align:center;">Contact Us </h2>
+    <form id="contact-form">
+      <div class="form-group">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+      </div>
+      <div class="form-group">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+      </div>
+      <div class="form-group">
+        <label for="message">Message:</label>
+        <textarea id="message" name="message" rows="5" required></textarea>
+      </div>
+      <div style="text-align:center; margin-top: 20px;">
+        <button type="submit" class="start-btn">Send</button>
+      </div>
+    </form>
+
+  </div>
+  <script>
+    document.getElementById("contact-form").addEventListener("submit", async function (e) {
+      e.preventDefault(); // منع الإرسال التقليدي
+
+      const form = e.target;
+      const formData = new FormData(form);
+
+      try {
+        const response = await fetch("/contact", {
+          method: "POST",
+          body: formData
+        });
+
+        if (response.ok) {
+          alert("✅ Your message has been sent successfully.");
+          form.reset(); // مسح الحقول
+        } else {
+          alert("❌ Failed to send message.");
+        }
+
+      } catch (error) {
+        alert("❌ Error occurred. Try again later.");
+        console.error(error);
+      }
+    });
+  </script>
+
+</body>
+
+</html>

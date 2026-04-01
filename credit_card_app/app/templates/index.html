@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GoCredi - Smart Approval Predictor</title>
+  <!-- Style Sheet -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" ...>
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='img/favicon.ico') }}?v=2">
+</head>
+
+<body>
+  <!-- 🔺 Currency Ticker -->
+  <div id="currency-ticker" class="ticker">
+    <div class="ticker-inner">
+      <span class="pair usd" onclick="showCurrencyModal('USD/ILS')">
+        <img src="{{ url_for('static', filename='img/flags/us.svg') }}" class="flag-icon"> USD/ILS: <span
+          id="usd-ils">—</span>
+      </span>
+      <span class="pair eur" onclick="showCurrencyModal('EUR/ILS')">
+        <img src="{{ url_for('static', filename='img/flags/eu.svg') }}" class="flag-icon"> EUR/ILS: <span
+          id="eur-ils">—</span></span>
+      <span class="pair gbp" onclick="showCurrencyModal('GBP/ILS')">
+        <img src="{{ url_for('static', filename='img/flags/gb.svg') }}" class="flag-icon"> GBP/ILS: <span
+          id="gbp-ils">—</span></span>
+      <span class="pair jod" onclick="showCurrencyModal('JOD/ILS')">
+        <img src="{{ url_for('static', filename='img/flags/jo.svg') }}" class="flag-icon">JOD/ILS: <span
+          id="jod-ils">—</span></span>
+      <span class="pair aed" onclick="showCurrencyModal('AED/ILS')">
+        <img src="{{ url_for('static', filename='img/flags/ae.svg') }}" class="flag-icon"> AED/ILS: <span
+          id="aed-ils">—</span></span>
+      <span class="pair sar" onclick="showCurrencyModal('SAR/ILS')">
+        <img src="{{ url_for('static', filename='img/flags/sa.svg') }}" class="flag-icon"> SAR/ILS: <span
+          id="sar-ils">—</span></span>
+      <span class="pair try" onclick="showCurrencyModal('TRY/ILS')">
+        <img src="{{ url_for('static', filename='img/flags/tr.svg') }}" class="flag-icon"> TRY/ILS: <span
+          id="try-ils">—</span></span>
+      <span class="pair kwd" onclick="showCurrencyModal('KWD/ILS')">
+        <img src="{{ url_for('static', filename='img/flags/kw.svg') }}" class="flag-icon">KWD/ILS: <span
+          id="kwd-ils">—</span></span>
+      <span class="pair egp" onclick="showCurrencyModal('EGP/ILS')">
+        <img src="{{ url_for('static', filename='img/flags/eg.svg') }}" class="flag-icon">EGP/ILS: <span
+          id="egp-ils">—</span></span>
+      <!-- <span class="pair qar" onclick="showCurrencyModal('qar/ILS')">
+      <img src="{{ url_for('static', filename='img/flags/qa.svg') }}" class="flag-icon">QAR/ILS: <span id="qar-ils">—</span></span> -->
+      <!-- <span class="pair bhd" onclick="showCurrencyModal('qar/ILS')"> BHD/ILS: <span id="bhd-ils">—</span></span> -->
+    </div>
+  </div>
+
+  <!-- 🟦 Navbar -->
+  <nav class="navbar">
+    <div class="logo">
+      <img src="{{ url_for('static', filename='img/logo-white.png') }}" alt="GoCredi Logo">
+      <span style="font-weight: bold; color: #FFF; font-size: 22px;">GoCredi</span>
+    </div>
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li><a href="/about">About CrediCard</a></li>
+      <li><a href="/aboutus">About Us</a></li>
+      <li><a href="/contact">Contact Us</a></li>
+    </ul>
+  </nav>
+
+  
+
+  <!-- 🟦 Hero Section -->
+  <section class="hero">
+    <h1>GoCredi</h1>
+    <p>Predict your credit-card approval odds in seconds</p>
+    <a href="/form" class="start-btn">Start the test</a>
+  </section>
+
+  <!-- 🟦💬 JS Modal لعرض تفاصيل العملة -->
+   <!-- 🔁 Fetch & Show Currency Rates -->
+  <script>
+    let latestRates = {}; // تخزين القيم    
+    function fetchRates() {
+      fetch('https://open.er-api.com/v6/latest/ILS')
+        .then(res => res.json())
+        .then(data => {
+          const rates = data.rates;
+
+          // الحسابات العكسية: كم 1 وحدة أجنبية = ILS
+          latestRates = {
+            'USD/ILS': 1 / rates.USD,
+            'EUR/ILS': 1 / rates.EUR,
+            'GBP/ILS': 1 / rates.GBP,
+            'JOD/ILS': 1 / rates.JOD,
+            'AED/ILS': 1 / rates.AED,
+            'SAR/ILS': 1 / rates.SAR,
+            'TRY/ILS': 1 / rates.TRY,
+            'KWD/ILS': 1 / rates.KWD,
+            'EGP/ILS': 1 / rates.EGP,
+            'QAR/ILS': 1 / rates.QAR,
+            // 'BHD/ILS': 1 / rates.BHD
+          };
+          // تحديث الشريط
+          for (const key in latestRates) {
+            const elId = key.split('/')[0].toLowerCase() + "-ils";
+            const el = document.getElementById(elId);
+            if (el) {
+              el.textContent = latestRates[key].toFixed(2);
+            }
+          }
+        })
+        .catch(error => {
+          console.error("❌ فشل في جلب الأسعار:", error);
+        });
+    }
+    function showCurrencyModal(pair) {
+      const current = latestRates[pair];
+      document.getElementById('modal-title').textContent = pair;
+      document.getElementById('modal-current').textContent = current.toFixed(2);
+      document.getElementById('modal-high').textContent = (current + 0.05).toFixed(2);
+      document.getElementById('modal-low').textContent = (current - 0.05).toFixed(2);
+      document.getElementById('currencyModal').style.display = 'block';
+    }
+    function closeCurrencyModal() {
+      document.getElementById('currencyModal').style.display = 'none';
+    }
+    // إغلاق المودال عند الضغط خارج المحتوى
+    window.onclick = function (event) {
+      const modal = document.getElementById('currencyModal');
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    }
+    fetchRates();
+    setInterval(fetchRates, 60000);
+  </script>
+
+<!--The first eddition was without the currency prices I'm added it -->
+
+<!-- 💬 Modal لعرض تفاصيل العملة -->
+<div id="currencyModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeCurrencyModal()">&times;</span>
+    <h3 id="modal-title">JOD/ILS</h3>
+
+    <p><strong>Live Rate:</strong> <span id="modal-current">—</span> 💰 </p>
+    <p><strong> Hour High-24:</strong> <span id="modal-high">—</span> 📈 </p>
+    <p><strong>Hour Low-24</strong> <span id="modal-low">—</span> 📉 </p>
+
+  </div>
+</div>
+</body>
+
+</html>
+
+

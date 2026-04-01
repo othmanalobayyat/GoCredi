@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>About Us | GoCredi</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="logo">
+      <img src="{{ url_for('static', filename='img/logo-white.png') }}" alt="GoCredi Logo">
+      <span style="font-weight: bold; color: #FFF; font-size: 22px;">GoCredi</span>
+    </div>
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li><a href="/about">About GoCredi</a></li>
+      <li><a href="/aboutus">About Us</a></li>
+      <li><a href="/contact">Contact Us</a></li>
+    </ul>
+  </nav>
+
+  <!-- About Us Content -->
+  <div class="container" style="margin-top: 40px; text-align: center;">
+
+    <!-- Logos -->
+    <div style="display: flex; justify-content: center; align-items: center; gap: 40px; margin-bottom: 30px;">
+      <img src="{{ url_for('static', filename='img/university-logo.png') }}" alt="University Logo" style="height: 110px;">
+      <img src="{{ url_for('static', filename='img/logo.png') }}" alt="GoCredi Logo" style="height: 90px;">
+    </div>
+
+    <!-- Project Description -->
+    <h2>About this Project</h2>
+    <p style="font-size: 16px; line-height: 1.6; max-width: 800px; margin: 0 auto; text-align: justify;">
+      This website is a student graduation project submitted as part of the "Programming Project" course,
+      which is a core requirement in the Intelligent Systems Engineering and Computer Engineering programs
+      at Palestine Ahliya University. The project was built using Machine Learning and web technologies
+      to predict credit card approval likelihood.
+    </p>
+
+    <!-- Team Info -->
+    <h3 style="margin-top: 30px;">Developed by:</h3>
+    <ul style="list-style: none; padding: 0; font-size: 16px;text-align: left;">
+      <li><strong>- Othman Muhammad Al-Obayyat</strong> — <a href="mailto:alobayyat.othman@gmail.com">alobayyat.othman@gmail.com</a></li>
+      <li><strong>- Rahaf Ihsan Adeelah</strong> — <a href="mailto:rahaf@gmail.com">rahafadeelah99@gmail.com</a></li>
+      <li><strong>- Saja Shehada</strong> — <a href="mailto:saja@gmail.com">saja.shehadeh22@gmail.com</a></li>
+    </ul>
+
+    <p style="margin-top: 15px; font-size: 15px;">For any inquiries, feel free to reach out via email.</p>
+  </div>
+
+</body>
+</html>
