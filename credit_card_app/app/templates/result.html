@@ -1,62 +1,106 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Your Result | GoCredi</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+    <link
+      rel="icon"
+      href="{{ url_for('static', filename='img/favicon.ico') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <title>Your Result | GoCredi</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-  <link rel="icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <body>
+    <nav class="navbar">…</nav>
 
-</head>
+    <div class="container" style="text-align: center">
+      <h2>🔍 Credit Evaluation Result</h2>
 
-<body>
-  <nav class="navbar">…</nav>
+      <!-- Primary decision — driven by model prediction (0 / 1) -->
+      {% if prediction == 1 %}
+      <p class="result-decision approved">✅ Approved</p>
+      {% else %}
+      <p class="result-decision rejected">❌ Not Approved</p>
+      {% endif %}
 
-  <div class="container" style="text-align: center;">
-    <h2>🔍 Evaluation Result</h2>
+      <!-- Risk tier — driven by acceptance probability -->
+      <span class="risk-badge risk-{{ risk_level | lower }}"
+        >{{ risk_level }} Risk</span
+      >
 
-    {% if prediction == 1 %}
-    <h3 style="color: #00c853;">✅ Congratulations! Your approval chances are high 👍</h3>
-    <p>We recommend proceeding with the official credit card application.</p>
-    {% else %}
-    <h3 style="color: #d32f2f;">❌ Unfortunately, your approval chances are low</h3>
-    <p>We suggest improving your income or employment duration to increase your chances.</p>
-    {% endif %}
+      <!-- Approval probability — hero number -->
+      <p class="result-probability">
+        {{ acceptance }}<span class="result-probability-unit">%</span>
+      </p>
+      <p class="result-probability-label">approval probability</p>
 
-    <!-- Doughnut Chart -->
-    <canvas id="resultChart" style="margin-top: 30px; max-width:400px; margin:auto;"></canvas>
+      <!-- Doughnut Chart -->
+      <canvas id="resultChart" style="max-width: 400px; margin: auto"></canvas>
 
-    <div style="margin-top: 30px;">
-      <a href="/form" class="start-btn">
-        <i class="fas fa-rotate-right"></i>  Try Again
-      </a>
+      <!-- Contextual advice — driven by risk tier -->
+      <div class="result-advice">
+        {% if prediction == 1 and risk_level == "Low" %}
+        <p>
+          Your financial profile is strong. You are a good candidate for
+          approval.
+        </p>
+
+        {% elif prediction == 1 and risk_level == "Medium" %}
+        <p>
+          You are likely to be approved, but improving your income or employment
+          stability could strengthen your profile.
+        </p>
+
+        {% elif prediction == 0 and risk_level == "Medium" %}
+        <p>
+          Your profile is borderline. Improving your income or employment
+          duration could increase your chances.
+        </p>
+
+        {% else %}
+        <p>
+          Your approval chances are currently low. Focus on increasing income,
+          employment stability, and assets before reapplying.
+        </p>
+
+        {% endif %}
+      </div>
+      <div style="margin-top: 30px">
+        <a href="/form" class="start-btn">
+          <i class="fas fa-rotate-right"></i> Try Again
+        </a>
+      </div>
     </div>
-  </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script>
-    const ctx = document.getElementById('resultChart').getContext('2d');
-    new Chart(ctx, {
-      type: 'doughnut',
-      data: {
-        labels: ['Rejection', 'Approval'],
-        datasets: [{
-          data: [{{ rejection }}, {{ acceptance }}],
-      backgroundColor: ['#d32f2f', '#00c853'],
-      borderWidth: 1
-    }]
-      },
-      options: {
-      plugins: {
-        legend: {
-          position: 'bottom',
-          labels: { font: { size: 14 } }
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      const ctx = document.getElementById('resultChart').getContext('2d');
+      new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Rejection', 'Approval'],
+          datasets: [{
+            data: [{{ rejection }}, {{ acceptance }}],
+        backgroundColor: ['#d32f2f', '#00c853'],
+        borderWidth: 1
+      }]
+        },
+        options: {
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { font: { size: 14 } }
+          }
         }
       }
-    }
-    });
-  </script>
-</body>
-
+      });
+    </script>
+  </body>
 </html>

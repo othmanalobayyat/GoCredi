@@ -23,8 +23,18 @@ def predict_credit(form_data, pipeline):
     prediction = pipeline.predict(raw_input)[0]
     proba = pipeline.predict_proba(raw_input)[0]
 
+    acceptance = round(proba[1] * 100, 1)
+
+    if acceptance >= 70:
+        risk_level = "Low"
+    elif acceptance >= 40:
+        risk_level = "Medium"
+    else:
+        risk_level = "High"
+
     return {
         "prediction": int(prediction),
-        "acceptance": round(proba[1] * 100, 1),
+        "acceptance": acceptance,
         "rejection": round(proba[0] * 100, 1),
+        "risk_level": risk_level,
     }
