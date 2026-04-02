@@ -1,133 +1,94 @@
 # GoCredi — Credit Card Approval Prediction
 
-A machine learning web application that predicts credit card approval probability
-based on applicant financial data. Built as a graduation project at Palestine Ahliya University.
+## A production-style machine learning system for credit card approval prediction, featuring risk scoring, explainability, and a REST API.
+
+## Key Features
+
+- **Approval prediction** — Random Forest classifier returning Approved / Not Approved
+- **Probability breakdown** — acceptance and rejection percentages with a doughnut chart
+- **Risk tier** — Low, Medium, or High based on approval probability thresholds
+- **Explainability** — top 3 globally most influential model features displayed per result
+- **Server-side validation** — all 10 input fields validated before prediction
+- **JSON API** — `POST /api/predict` for programmatic access
+- **Structured logging** — every prediction logged with key fields for traceability
+- **Health endpoint** — `GET /health` for uptime monitoring
 
 ---
 
-## Overview
-
-GoCredi takes ten applicant inputs and returns an approval decision with a probability
-breakdown, a risk tier (Low / Medium / High), and the top three most influential model
-factors. The backend is a scikit-learn Random Forest pipeline served through a Flask
-web application, with both a web UI and a JSON API endpoint.
-
-**Authors:** Othman Muhammad Al-Obayyat · Rahaf Ihsan Adeelah · Saja Shehada
-
----
-
-## Tech Stack
-
-| Layer | Technology |
-|---|---|
-| Web framework | Flask 3.1.3 |
-| ML pipeline | scikit-learn 1.6.1, imbalanced-learn 0.12.4 |
-| Data handling | pandas 3.0.1, numpy 2.4.2 |
-| Serialization | joblib 1.5.3 |
-| Frontend | Jinja2, custom CSS, Chart.js, Font Awesome |
-| Currency ticker | er-api.com (live exchange rates) |
-
----
-
-## Project Structure
+## System Architecture
 
 ```
-GoCreadi/
-├── credit_card_app/          # Flask application
-│   ├── app/
-│   │   ├── __init__.py       # App factory, pipeline loading, logging, error handlers
-│   │   ├── routes.py         # URL routes (web + JSON API)
-│   │   ├── validators.py     # Server-side input validation
-│   │   ├── services/
-│   │   │   └── prediction_service.py  # predict_credit(), feature importance
-│   │   ├── templates/        # Jinja2 HTML templates
-│   │   └── static/           # CSS, images, flag SVGs
-│   ├── config.py
-│   ├── requirements.txt
-│   └── run.py
-├── model_artifacts/
-│   └── pipeline.pkl          # Trained scikit-learn pipeline (6.4 MB)
-├── notebooks/
-│   └── credit_approval_model.ipynb  # Full ML training notebook
-└── data/                     # Raw CSV files (not committed — ~67 MB)
+Browser / API Client
+       │
+       ▼
+  Flask (routes.py)
+       │
+  validate_form()          ← app/validators.py
+       │
+  predict_credit()         ← app/services/prediction_service.py
+       │
+  ImbPipeline.predict()    ← model_artifacts/pipeline.pkl
+       │
+  result.html / JSON
 ```
 
----
-
-## Setup
-
-> **Python version required: 3.11**
-> The trained `pipeline.pkl` was serialized with scikit-learn 1.6.1 on Python 3.11.
-> Loading it with a different scikit-learn version will raise a deserialization error.
-> If Python 3.11 is unavailable, retrain the model using the notebook and update
-> `requirements.txt` with your current environment's pinned versions.
-
-```bash
-# 1. Create a virtual environment with Python 3.11
-py -3.11 -m venv credit_card_app/venv
-
-# 2. Activate it
-# Windows:
-credit_card_app\venv\Scripts\activate
-# macOS/Linux:
-source credit_card_app/venv/bin/activate
-
-# 3. Install dependencies
-pip install -r credit_card_app/requirements.txt
-
-# 4. Run the app (from any directory)
-python credit_card_app/run.py
-```
-
-The app will be available at `http://127.0.0.1:5000`
+The ML pipeline is loaded once at startup into `app.config["PIPELINE"]` and shared across all requests. No pipeline reload per request.
 
 ---
 
-## Input Features
+## ML Approach
 
-The model uses ten features (Set B):
+| Component       | Detail                                                        |
+| --------------- | ------------------------------------------------------------- |
+| Algorithm       | Random Forest (100 estimators)                                |
+| Preprocessing   | StandardScaler (numerical) + OneHotEncoder (categorical)      |
+| Class balancing | SMOTE — applied inside ImbPipeline during training only       |
+| Feature set     | Set B — 10 features (see below)                               |
+| Tuning          | RandomizedSearchCV (n_iter=10) with 5-fold StratifiedKFold CV |
 
-| Field | Description | Type | Values |
-|---|---|---|---|
-| Gender | Applicant gender | Categorical | M / F |
-| Own Car | Car ownership | Categorical | Y / N |
-| Own Property | Property ownership | Categorical | Y / N |
-| Education | Education level | Categorical | Higher education, Secondary, etc. |
-| Income Type | Employment category | Categorical | Working, Pensioner, Student, etc. |
-| Family Status | Marital status | Categorical | Married, Single, etc. |
-| Annual Income | Total yearly income | Numeric | > 0 |
-| Age | Applicant age | Numeric | 18–100 |
-| Years Employed | Employment duration | Numeric | 0–60 |
-| Family Members | Household size | Numeric | 1–20 |
+### Input Features (Set B)
 
----
+| Field              | Type        | Example                            |
+| ------------------ | ----------- | ---------------------------------- |
+| Gender             | Categorical | `M` / `F`                          |
+| Car ownership      | Categorical | `Y` / `N`                          |
+| Property ownership | Categorical | `Y` / `N`                          |
+| Education level    | Categorical | `Higher education`                 |
+| Income type        | Categorical | `Working`, `Pensioner`, `Student`… |
+| Family status      | Categorical | `Married`, `Single / not married`… |
+| Annual income      | Numeric     | `150000`                           |
+| Age                | Numeric     | `35`                               |
+| Years employed     | Numeric     | `8`                                |
+| Family members     | Numeric     | `3`                                |
 
-## Result Output
+### Explainability Note
 
-Each prediction returns:
-
-- **Decision** — Approved or Not Approved
-- **Approval probability** — displayed as a percentage and doughnut chart
-- **Risk tier** — Low (≥70%), Medium (40–69%), High (<40%)
-- **Top 3 model factors** — the features with the highest impact on the decision
+The top 3 features shown on the result page reflect **global model feature importances** (Random Forest's `feature_importances_`), aggregated back from OHE dummy columns to original feature names. They represent which features matter most to the model overall — not a per-prediction SHAP explanation.
 
 ---
 
 ## API
 
-### Health check
+### Health Check
 
 ```
 GET /health
-→ {"status": "ok"}
 ```
 
-### Predict (JSON)
+```json
+{ "status": "ok" }
+```
+
+### Predict
 
 ```
 POST /api/predict
 Content-Type: application/json
+```
 
+**Request:**
+
+```json
 {
   "gender": "M",
   "own_car": "Y",
@@ -142,7 +103,7 @@ Content-Type: application/json
 }
 ```
 
-Response:
+**Response:**
 
 ```json
 {
@@ -154,42 +115,113 @@ Response:
 }
 ```
 
-- `prediction`: `1` = approved, `0` = not approved
-- `acceptance` / `rejection`: probabilities summing to 100
-- `top_features`: global model feature importances (Random Forest), not per-prediction SHAP values
+| Field                      | Values                                               |
+| -------------------------- | ---------------------------------------------------- |
+| `prediction`               | `1` = Approved, `0` = Not Approved                   |
+| `risk_level`               | `"Low"` (≥70%), `"Medium"` (40–69%), `"High"` (<40%) |
+| `acceptance` / `rejection` | Probabilities summing to 100                         |
+| `top_features`             | Up to 3 global feature importance labels             |
+
+Validation errors return HTTP 400:
+
+```json
+{
+  "error": "Validation failed",
+  "details": "Age must be between 18 and 100."
+}
+```
 
 ---
 
-## ML Notebook
+## Setup
 
-The notebook `notebooks/credit_approval_model.ipynb` contains the full training pipeline:
+### Requirements
 
-- Data loading and merging from two CSV sources
-- Feature engineering (AGE, YEARS_EMPLOYED converted from raw day counts)
-- Outlier removal (IQR method, training set only)
-- Preprocessing via ColumnTransformer (StandardScaler + OneHotEncoder with `handle_unknown='ignore'`)
-- Class balancing via SMOTE inside an ImbPipeline (applied only during training folds)
-- Feature selection experiment comparing 7, 10, and 14 feature sets
-- Model comparison (Random Forest vs KNN)
-- 5-fold StratifiedKFold cross-validation
-- RandomizedSearchCV hyperparameter tuning (n_iter=10)
-- Final pipeline export to `model_artifacts/pipeline.pkl`
+- **Python 3.11** (recommended — `pipeline.pkl` was serialized with scikit-learn 1.6.1 on Python 3.11)
+- If Python 3.11 is unavailable, retrain the model using the notebook and update `requirements.txt` with `pip freeze`
+
+### Installation
+
+```bash
+# 1. Create a virtual environment (Python 3.11)
+py -3.11 -m venv credit_card_app/venv
+
+# 2. Activate it
+# Windows:
+credit_card_app\venv\Scripts\activate
+# macOS / Linux:
+source credit_card_app/venv/bin/activate
+
+# 3. Install dependencies
+pip install -r credit_card_app/requirements.txt
+
+# 4. Run the app
+python credit_card_app/run.py
+```
+
+The app will be available at `http://127.0.0.1:5000`.
+
+---
+
+## Project Structure
+
+```
+GoCreadi/
+├── credit_card_app/
+│   ├── run.py                        # Entry point
+│   ├── config.py                     # App config (SECRET_KEY)
+│   ├── requirements.txt              # Pinned dependencies
+│   └── app/
+│       ├── __init__.py               # App factory, pipeline loading, logging
+│       ├── routes.py                 # All routes (web UI + API)
+│       ├── validators.py             # Server-side input validation
+│       ├── services/
+│       │   └── prediction_service.py # predict_credit(), feature importance
+│       ├── static/
+│       │   ├── css/style.css
+│       │   └── img/
+│       └── templates/
+│           ├── form.html             # Input form
+│           ├── result.html           # Prediction result
+│           ├── error.html
+│           └── partials/             # Navbar, currency ticker
+├── model_artifacts/
+│   └── pipeline.pkl                  # Trained pipeline (6.4 MB)
+├── notebooks/
+│   └── credit_approval_model.ipynb   # Full training notebook
+└── data/                             # Not committed (~67 MB)
+    ├── application_record.csv
+    └── credit_record.csv
+```
 
 ---
 
 ## Data
 
-Raw data files are not committed to this repository (combined ~67 MB).
+Raw data files are not committed to this repository.
 
-| File | Description | Source |
-|---|---|---|
-| `application_record.csv` | 438,557 applicant records | Kaggle |
-| `credit_record.csv` | 1,048,575 monthly credit status records | Kaggle |
+| File                     | Rows      | Source |
+| ------------------------ | --------- | ------ |
+| `application_record.csv` | 438,557   | Kaggle |
+| `credit_record.csv`      | 1,048,575 | Kaggle |
 
-Place both files in the `data/` directory before running the notebook.
+Place both files in the `data/` directory before running the training notebook.
 
 ---
 
-## License
+## Future Improvements
 
-University graduation project — Palestine Ahliya University, 2025.
+- **Per-prediction explainability** — replace global feature importance with SHAP values
+- **Unit and integration tests** — currently no test coverage
+- **Deployment** — host on Render or Railway for a live demo URL
+- **Contact form persistence** — store or forward submitted messages instead of discarding
+
+---
+
+## Project Note
+
+This repository contains a substantially reworked and extended version of an earlier university programming project. The current implementation and major improvements — including ML pipeline cleanup, Set B feature migration, server-side validation, risk classification, explainability, structured logging, and API support — were completed by **Othman Muhammad Al-Obayyat**.
+
+---
+
+_Palestine Ahliya University — programming Project, 2025_
