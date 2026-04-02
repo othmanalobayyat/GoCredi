@@ -2,113 +2,105 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Your Result | GoCredi</title>
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='css/style.css') }}"
-    />
-    <link
-      rel="icon"
-      href="{{ url_for('static', filename='img/favicon.ico') }}"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='img/favicon.ico') }}" />
   </head>
 
   <body>
-    <nav class="navbar">…</nav>
 
-    <div class="container" style="text-align: center">
-      <h2>🔍 Credit Evaluation Result</h2>
+    <!-- Navbar -->
+    <nav class="navbar">
+      <div class="logo">
+        <img src="{{ url_for('static', filename='img/logo-white.png') }}" alt="GoCredi Logo" />
+        <span style="font-weight: bold; color: #fff; font-size: 22px">GoCredi</span>
+      </div>
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/about">About CrediCard</a></li>
+        <li><a href="/aboutus">About Us</a></li>
+        <li><a href="/contact">Contact Us</a></li>
+      </ul>
+    </nav>
 
-      <!-- Primary decision — driven by model prediction (0 / 1) -->
-      {% if prediction == 1 %}
-      <p class="result-decision approved">✅ Approved</p>
-      {% else %}
-      <p class="result-decision rejected">❌ Not Approved</p>
-      {% endif %}
+    <!-- Page Header -->
+    <div class="result-page-header">
+      <p class="result-page-label">Your Result</p>
+      <h1 class="result-page-title">Credit Evaluation Summary</h1>
+    </div>
 
-      <!-- Risk tier — driven by acceptance probability -->
-      <span class="risk-badge risk-{{ risk_level | lower }}"
-        >{{ risk_level }} Risk</span
-      >
+    <!-- Result Card -->
+    <div class="result-container">
 
-      <!-- Approval probability — hero number -->
-      <p class="result-probability">
-        {{ acceptance }}<span class="result-probability-unit">%</span>
-      </p>
-      <p class="result-probability-label">approval probability</p>
+      <!-- Verdict -->
+      <div class="result-verdict">
+        {% if prediction == 1 %}
+        <p class="result-decision approved">
+          <i class="fas fa-circle-check"></i> Approved
+        </p>
+        {% else %}
+        <p class="result-decision rejected">
+          <i class="fas fa-circle-xmark"></i> Not Approved
+        </p>
+        {% endif %}
+        <span class="risk-badge risk-{{ risk_level | lower }}">{{ risk_level }} Risk</span>
+      </div>
+
+      <!-- Probability Score -->
+      <div class="result-score">
+        <p class="result-probability">
+          {{ acceptance }}<span class="result-probability-unit">%</span>
+        </p>
+        <p class="result-probability-label">approval probability</p>
+      </div>
 
       <!-- Doughnut Chart -->
-      <canvas id="resultChart" style="max-width: 400px; margin: auto"></canvas>
+      <div class="result-chart-wrap">
+        <canvas id="resultChart"></canvas>
+      </div>
 
-      <!-- Contextual advice — driven by risk tier -->
+      <div class="result-divider"></div>
+
+      <!-- Contextual Advice -->
       <div class="result-advice">
         {% if prediction == 1 and risk_level == "Low" %}
-        <p>
-          Your financial profile is strong. You are a good candidate for
-          approval.
-        </p>
-
+        <p>Your financial profile is strong. You are a good candidate for approval.</p>
         {% elif prediction == 1 and risk_level == "Medium" %}
-        <p>
-          You are likely to be approved, but improving your income or employment
-          stability could strengthen your profile.
-        </p>
-
+        <p>You are likely to be approved, but improving your income or employment stability could strengthen your profile.</p>
         {% elif prediction == 0 and risk_level == "Medium" %}
-        <p>
-          Your profile is borderline. Improving your income or employment
-          duration could increase your chances.
-        </p>
-
+        <p>Your profile is borderline. Improving your income or employment duration could increase your chances.</p>
         {% else %}
-        <p>
-          Your approval chances are currently low. Focus on increasing income,
-          employment stability, and assets before reapplying.
-        </p>
-
+        <p>Your approval chances are currently low. Focus on increasing income, employment stability, and assets before reapplying.</p>
         {% endif %}
       </div>
+
       {% if top_features %}
-      <div style="max-width: 480px; margin: 20px auto 0; text-align: left">
-        <p
-          style="
-            font-size: 13px;
-            color: #999;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            margin-bottom: 8px;
-          "
-        >
-          Most influential model factors
-        </p>
-        <ul style="list-style: none; padding: 0; margin: 0">
+      <div class="result-divider"></div>
+
+      <!-- Key Factors -->
+      <div class="result-factors">
+        <p class="result-factors-label">Most influential model factors</p>
+        <ul class="result-factors-list">
           {% for feature in top_features %}
-          <li
-            style="
-              padding: 8px 12px;
-              margin-bottom: 6px;
-              background: #f0f8ff;
-              border-radius: 8px;
-              font-size: 15px;
-              color: #333;
-            "
-          >
-            {{ loop.index }}. {{ feature }}
+          <li class="result-factor-item">
+            <span class="result-factor-rank">{{ loop.index }}</span>
+            <span class="result-factor-name">{{ feature }}</span>
           </li>
           {% endfor %}
         </ul>
       </div>
       {% endif %}
 
-      <div style="margin-top: 30px">
+      <!-- CTA -->
+      <div class="result-cta">
         <a href="/form" class="start-btn">
           <i class="fas fa-rotate-right"></i> Try Again
         </a>
       </div>
+
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -120,19 +112,20 @@
           labels: ['Rejection', 'Approval'],
           datasets: [{
             data: [{{ rejection }}, {{ acceptance }}],
-        backgroundColor: ['#d32f2f', '#00c853'],
-        borderWidth: 1
-      }]
+            backgroundColor: ['#d32f2f', '#00c853'],
+            borderWidth: 1
+          }]
         },
         options: {
-        plugins: {
-          legend: {
-            position: 'bottom',
-            labels: { font: { size: 14 } }
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: { font: { size: 14 } }
+            }
           }
         }
-      }
       });
     </script>
+
   </body>
 </html>

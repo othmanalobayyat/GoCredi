@@ -2,34 +2,21 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Application Form | GoCredi</title>
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='css/style.css') }}"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    />
-    <!-- Favicon -->
-    <link
-      rel="icon"
-      type="image/x-icon"
-      href="{{ url_for('static', filename='img/favicon.ico') }}?v=2"
-    />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='img/favicon.ico') }}?v=2" />
   </head>
 
   <body>
+
     <!-- Navbar -->
     <nav class="navbar">
       <div class="logo">
-        <img
-          src="{{ url_for('static', filename='img/logo-white.png') }}"
-          alt="GoCredi Logo"
-        />
-        <span style="font-weight: bold; color: #fff; font-size: 22px"
-          >GoCredi</span
-        >
+        <img src="{{ url_for('static', filename='img/logo-white.png') }}" alt="GoCredi Logo" />
+        <span style="font-weight: bold; color: #fff; font-size: 22px">GoCredi</span>
       </div>
       <ul>
         <li><a href="/">Home</a></li>
@@ -39,43 +26,39 @@
       </ul>
     </nav>
 
-    <!-- Form Section -->
-    <div class="container">
-      <h2 style="text-align: center">
-        Check Your Eligibility for a Credit Card
-      </h2>
+    <!-- Page Header -->
+    <div class="form-page-header">
+      <h1 class="form-page-title">Check Your Eligibility</h1>
+      <p class="form-page-sub">Fill in your details to get an instant credit card approval prediction.</p>
+    </div>
 
+    <!-- Form -->
+    <div class="container form-container">
       <form method="POST" action="/predict">
+
+        <!-- Section 1: Personal Information -->
+        <p class="form-section-label">Personal Information</p>
         <div class="form-row">
-          <!-- Gender -->
+
           <div class="form-group">
-            <label>Gender:</label>
-            <div class="inline-options">
-              <label
-                ><input type="radio" name="gender" value="M" required />
-                Male</label
-              >
-              <label
-                ><input type="radio" name="gender" value="F" /> Female</label
-              >
+            <label class="field-label">Gender</label>
+            <div class="radio-group">
+              <label class="radio-option">
+                <input type="radio" name="gender" value="M" required />
+                <span>Male</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="gender" value="F" />
+                <span>Female</span>
+              </label>
             </div>
           </div>
 
-          <!-- Education -->
           <div class="form-group">
-            <label for="education">
-              Education Level:
-              <i
-                class="fas fa-info-circle"
-                onclick="openModal('educationModal')"
-                style="
-                  cursor: pointer;
-                  color: var(--primary-dark);
-                  margin-left: 5px;
-                "
-              ></i>
+            <label class="field-label" for="education">
+              Education Level
+              <i class="fas fa-info-circle field-info" onclick="openModal('educationModal')"></i>
             </label>
-
             <select id="education" name="education" required>
               <option value="">Select...</option>
               <option value="Higher education">Higher Education</option>
@@ -86,38 +69,47 @@
             </select>
           </div>
 
-          <!-- Own Car -->
           <div class="form-group">
-            <label>Do you own a car?</label>
-            <div class="inline-options">
-              <label
-                ><input type="radio" name="own_car" value="Y" required />
-                Yes</label
-              >
-              <label><input type="radio" name="own_car" value="N" /> No</label>
+            <label class="field-label">Car Ownership</label>
+            <div class="radio-group">
+              <label class="radio-option">
+                <input type="radio" name="own_car" value="Y" required />
+                <span>Yes</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="own_car" value="N" />
+                <span>No</span>
+              </label>
             </div>
           </div>
+
         </div>
 
-        <!-- Row 2: Property ownership / Income type / Family status -->
+        <div class="form-divider"></div>
+
+        <!-- Section 2: Financial Profile -->
+        <p class="form-section-label">Financial Profile</p>
         <div class="form-row">
-          <!-- Own Realty -->
+
           <div class="form-group">
-            <label>Do you own property?</label>
-            <div class="inline-options">
-              <label
-                ><input type="radio" name="own_realty" value="Y" required />
-                Yes</label
-              >
-              <label
-                ><input type="radio" name="own_realty" value="N" /> No</label
-              >
+            <label class="field-label">Property Ownership</label>
+            <div class="radio-group">
+              <label class="radio-option">
+                <input type="radio" name="own_realty" value="Y" required />
+                <span>Yes</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="own_realty" value="N" />
+                <span>No</span>
+              </label>
             </div>
           </div>
 
-          <!-- Income Type -->
           <div class="form-group">
-            <label for="income_type">Income Type:</label>
+            <label class="field-label" for="income_type">
+              Income Type
+              <i class="fas fa-info-circle field-info" onclick="openModal('incomeTypeModal')"></i>
+            </label>
             <select id="income_type" name="income_type" required>
               <option value="">Select...</option>
               <option value="Working">Working</option>
@@ -128,9 +120,8 @@
             </select>
           </div>
 
-          <!-- Family Status -->
           <div class="form-group">
-            <label for="family_status">Family Status:</label>
+            <label class="field-label" for="family_status">Family Status</label>
             <select id="family_status" name="family_status" required>
               <option value="">Select...</option>
               <option value="Married">Married</option>
@@ -140,162 +131,115 @@
               <option value="Widow">Widow</option>
             </select>
           </div>
+
         </div>
 
-        <!-- Income & Age -->
-        <div class="form-group">
-          <label for="income">
-            Annual Income:
-            <i
-              class="fas fa-info-circle"
-              onclick="openModal('incomeModal')"
-              style="
-                cursor: pointer;
-                color: var(--primary-dark);
-                margin-left: 5px;
-              "
-            ></i>
-          </label>
-          <input type="number" id="income" name="income" required />
-        </div>
+        <div class="form-divider"></div>
 
-        <div class="form-group">
-          <label for="age">Age:</label>
-          <input type="number" id="age" name="age" required />
-        </div>
+        <!-- Section 3: Your Numbers -->
+        <p class="form-section-label">Your Numbers</p>
+        <div class="form-row">
 
-        <!-- Employment Years & Family Members -->
-        <div class="form-group">
-          <div class="form-group half">
-            <label for="years_employed">
-              📅 Years Employed:
-              <i
-                class="fas fa-info-circle"
-                onclick="openModal('employmentModal')"
-                style="
-                  cursor: pointer;
-                  color: var(--primary-dark);
-                  margin-left: 5px;
-                "
-              ></i>
-            </label>
-
-            <input
-              type="number"
-              id="years_employed"
-              name="years_employed"
-              min="0"
-              required
-            />
-          </div>
           <div class="form-group">
-            <label for="family_members">
-              👨‍👩‍👧‍👦 Family Members:
-              <i
-                class="fas fa-info-circle"
-                onclick="openModal('familyModal')"
-                style="
-                  cursor: pointer;
-                  color: var(--primary-dark);
-                  margin-left: 5px;
-                "
-              ></i>
+            <label class="field-label" for="income">
+              Annual Income
+              <i class="fas fa-info-circle field-info" onclick="openModal('incomeModal')"></i>
             </label>
-
-            <input
-              type="number"
-              id="family_members"
-              name="family_members"
-              min="1"
-              required
-            />
+            <input type="number" id="income" name="income" placeholder="e.g. 120000" required />
           </div>
+
+          <div class="form-group">
+            <label class="field-label" for="age">Age</label>
+            <input type="number" id="age" name="age" placeholder="e.g. 30" required />
+          </div>
+
         </div>
 
-        <div style="text-align: center; margin-top: 25px">
-          <button type="submit" class="start-btn">Get Evaluation</button>
+        <div class="form-row">
+
+          <div class="form-group">
+            <label class="field-label" for="years_employed">
+              Years Employed
+              <i class="fas fa-info-circle field-info" onclick="openModal('employmentModal')"></i>
+            </label>
+            <input type="number" id="years_employed" name="years_employed" min="0" placeholder="e.g. 5" required />
+          </div>
+
+          <div class="form-group">
+            <label class="field-label" for="family_members">
+              Family Members
+              <i class="fas fa-info-circle field-info" onclick="openModal('familyModal')"></i>
+            </label>
+            <input type="number" id="family_members" name="family_members" min="1" placeholder="e.g. 3" required />
+          </div>
+
         </div>
+
+        <!-- Submit -->
+        <div class="form-footer">
+          <button type="submit" class="start-btn form-submit-btn">Get My Prediction</button>
+        </div>
+
       </form>
     </div>
+
+    <!-- Modals -->
+    <div id="incomeTypeModal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeModal('incomeTypeModal')">&times;</span>
+        <h3>Income Type</h3>
+        <p>Select the category that best describes your main source of income. <em>Working</em> means salaried employment; <em>Commercial associate</em> means self-employed or business ownership; <em>State servant</em> means government employment; <em>Pensioner</em> means retirement income; <em>Student</em> means no current employment income.</p>
+      </div>
+    </div>
+
+    <div id="incomeModal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeModal('incomeModal')">&times;</span>
+        <h3>What is Annual Income?</h3>
+        <p>The total amount you earn yearly from all sources. A higher income generally improves your approval chances.</p>
+      </div>
+    </div>
+
+    <div id="educationModal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeModal('educationModal')">&times;</span>
+        <h3>What is Education Level?</h3>
+        <p>Your highest academic qualification. Higher education may positively influence credit card approval.</p>
+      </div>
+    </div>
+
+    <div id="employmentModal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeModal('employmentModal')">&times;</span>
+        <h3>Years of Employment</h3>
+        <p>How long you have been continuously employed. Longer employment signals financial stability to lenders.</p>
+      </div>
+    </div>
+
+    <div id="familyModal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeModal('familyModal')">&times;</span>
+        <h3>Family Members</h3>
+        <p>The number of people in your household. This helps estimate your financial responsibilities.</p>
+      </div>
+    </div>
+
+    <script>
+      function openModal(id) {
+        document.getElementById(id).style.display = "block";
+      }
+      function closeModal(id) {
+        document.getElementById(id).style.display = "none";
+      }
+      window.onclick = function (event) {
+        const modals = document.querySelectorAll(".modal");
+        modals.forEach((modal) => {
+          if (event.target == modal) {
+            modal.style.display = "none";
+          }
+        });
+      };
+    </script>
+
   </body>
 </html>
-
-<!-- Income Explanation Modal -->
-<div id="incomeModal" class="modal">
-  <div class="modal-content">
-    <span class="close" onclick="closeModal('incomeModal')">&times;</span>
-    <h3>?What is Annual Income</h3>
-    <p>
-      .It refers to the total amount you earn yearly from all sources of income.
-      The higher your income, the greater your chance of getting card approval,
-      as the bank sees you as more financially reliable
-    </p>
-  </div>
-</div>
-
-<!-- Education Explanation Modal -->
-<div id="educationModal" class="modal">
-  <div class="modal-content">
-    <span class="close" onclick="closeModal('educationModal')">&times;</span>
-    <h3>?What is Education Level</h3>
-    <p>
-      It refers to your highest academic achievement. This helps banks assess
-      your background and financial knowledge. Higher education may positively
-      influence approval
-    </p>
-  </div>
-</div>
-
-<!-- Employment Modal -->
-<div id="employmentModal" class="modal">
-  <div class="modal-content">
-    <span class="close" onclick="closeModal('employmentModal')">&times;</span>
-    <h3>Years of Employment</h3>
-    <p>
-      This refers to how long you have been employed. More years indicate
-      financial stability, which increases your approval chances
-    </p>
-  </div>
-</div>
-
-<!-- Family Modal -->
-<div id="familyModal" class="modal">
-  <div class="modal-content">
-    <span class="close" onclick="closeModal('familyModal')">&times;</span>
-    <h3>Number of Family Members</h3>
-    <p>
-      This helps banks estimate your financial responsibilities. A higher number
-      of dependents might affect your eligibility slightly
-    </p>
-  </div>
-</div>
-
-<!-- Car Ownership Modal -->
-<!-- <div id="carModal" class="modal">
-  <div class="modal-content">
-    <span class="close" onclick="closeModal('carModal')">&times;</span>
-    <h3>Car Ownership</h3>
-    <p>
-      Owning a car may indicate a certain level of financial capability or responsibilities, which can influence your approval score.
-    </p>
-  </div>
-</div> -->
-
-<script>
-  function openModal(id) {
-    document.getElementById(id).style.display = "block";
-  }
-
-  function closeModal(id) {
-    document.getElementById(id).style.display = "none";
-  }
-
-  window.onclick = function (event) {
-    const modals = document.querySelectorAll(".modal");
-    modals.forEach((modal) => {
-      if (event.target == modal) {
-        modal.style.display = "none";
-      }
-    });
-  };
-</script>
