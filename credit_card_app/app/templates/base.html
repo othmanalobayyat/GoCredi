@@ -1,27 +1,39 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}GoCredi{% endblock %}</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='img/favicon.ico') }}" />
-</head>
-<body>
-  {% if show_ticker %}
-    {% include 'partials/ticker.html' %}
-  {% endif %}
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}GoCredi{% endblock %}</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="{{ url_for('static', filename='img/favicon.ico') }}"
+    />
+  </head>
+  <body>
+    {% if show_ticker %} {% include 'partials/currency-ticker.html' %} {% endif
+    %} {% include 'partials/navbar.html' %}
 
-  {% include 'partials/navbar.html' %}
+    <main>{% block content %}{% endblock %}</main>
 
-  <main>
-    {% block content %}{% endblock %}
-  </main>
+    {% include 'partials/modals.html' %} {% include 'partials/footer.html' %}
 
-  <footer class="site-footer">
-    <span>GoCredi &copy; 2025 &nbsp;&middot;&nbsp; Palestine Ahliya University</span>
-  </footer>
-</body>
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% if show_ticker %}
+    <script src="{{ url_for('static', filename='js/currency.js') }}"></script>
+    {% endif %}
+  </body>
 </html>

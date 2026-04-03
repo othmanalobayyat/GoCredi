@@ -1,0 +1,48 @@
+<!-- 💬 Currency Modal -->
+<div id="currencyModal" class="modal">
+  <div class="currency-modal-content">
+    <button
+      class="currency-modal-close"
+      onclick="closeCurrencyModal()"
+      aria-label="Close modal"
+    >
+      &times;
+    </button>
+
+    <div class="currency-modal-header">
+      <div class="currency-modal-icon">
+        <i class="fas fa-chart-line"></i>
+      </div>
+      <div>
+        <p class="currency-modal-label">Exchange Details</p>
+        <h3 id="modal-title">Currency Pair</h3>
+      </div>
+    </div>
+
+    <div class="currency-stats">
+      <div class="currency-stat-card">
+        <div class="currency-stat-top">
+          <i class="fas fa-coins"></i>
+          <span>Live Rate</span>
+        </div>
+        <strong id="modal-current">—</strong>
+      </div>
+
+      <div class="currency-stat-card">
+        <div class="currency-stat-top">
+          <i class="fas fa-arrow-trend-up"></i>
+          <span>24h High</span>
+        </div>
+        <strong id="modal-high">—</strong>
+      </div>
+
+      <div class="currency-stat-card">
+        <div class="currency-stat-top">
+          <i class="fas fa-arrow-trend-down"></i>
+          <span>24h Low</span>
+        </div>
+        <strong id="modal-low">—</strong>
+      </div>
+    </div>
+  </div>
+</div>

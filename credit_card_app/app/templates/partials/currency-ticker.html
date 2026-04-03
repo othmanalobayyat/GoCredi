@@ -1,0 +1,85 @@
+<!-- 🔺 Currency Ticker -->
+<div id="currency-ticker" class="ticker">
+  <div class="ticker-inner">
+    <span class="pair usd" onclick="showCurrencyModal('USD/ILS')">
+      <img
+        src="{{ url_for('static', filename='img/flags/us.svg') }}"
+        class="flag-icon"
+        alt="USD flag"
+      />
+      USD/ILS: <span id="usd-ils">—</span>
+    </span>
+
+    <span class="pair eur" onclick="showCurrencyModal('EUR/ILS')">
+      <img
+        src="{{ url_for('static', filename='img/flags/eu.svg') }}"
+        class="flag-icon"
+        alt="EUR flag"
+      />
+      EUR/ILS: <span id="eur-ils">—</span>
+    </span>
+
+    <span class="pair gbp" onclick="showCurrencyModal('GBP/ILS')">
+      <img
+        src="{{ url_for('static', filename='img/flags/gb.svg') }}"
+        class="flag-icon"
+        alt="GBP flag"
+      />
+      GBP/ILS: <span id="gbp-ils">—</span>
+    </span>
+
+    <span class="pair jod" onclick="showCurrencyModal('JOD/ILS')">
+      <img
+        src="{{ url_for('static', filename='img/flags/jo.svg') }}"
+        class="flag-icon"
+        alt="JOD flag"
+      />
+      JOD/ILS: <span id="jod-ils">—</span>
+    </span>
+
+    <span class="pair aed" onclick="showCurrencyModal('AED/ILS')">
+      <img
+        src="{{ url_for('static', filename='img/flags/ae.svg') }}"
+        class="flag-icon"
+        alt="AED flag"
+      />
+      AED/ILS: <span id="aed-ils">—</span>
+    </span>
+
+    <span class="pair sar" onclick="showCurrencyModal('SAR/ILS')">
+      <img
+        src="{{ url_for('static', filename='img/flags/sa.svg') }}"
+        class="flag-icon"
+        alt="SAR flag"
+      />
+      SAR/ILS: <span id="sar-ils">—</span>
+    </span>
+
+    <span class="pair try" onclick="showCurrencyModal('TRY/ILS')">
+      <img
+        src="{{ url_for('static', filename='img/flags/tr.svg') }}"
+        class="flag-icon"
+        alt="TRY flag"
+      />
+      TRY/ILS: <span id="try-ils">—</span>
+    </span>
+
+    <span class="pair kwd" onclick="showCurrencyModal('KWD/ILS')">
+      <img
+        src="{{ url_for('static', filename='img/flags/kw.svg') }}"
+        class="flag-icon"
+        alt="KWD flag"
+      />
+      KWD/ILS: <span id="kwd-ils">—</span>
+    </span>
+
+    <span class="pair egp" onclick="showCurrencyModal('EGP/ILS')">
+      <img
+        src="{{ url_for('static', filename='img/flags/eg.svg') }}"
+        class="flag-icon"
+        alt="EGP flag"
+      />
+      EGP/ILS: <span id="egp-ils">—</span>
+    </span>
+  </div>
+</div>
