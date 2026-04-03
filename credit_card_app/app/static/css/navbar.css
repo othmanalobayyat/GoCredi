@@ -4,7 +4,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 20px 10%;
-  background: linear-gradient(to right, #00ddf6, #6569f5);
+  background: linear-gradient(to right, #00b4ff, #6569f5);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
   font-family: var(--font);
   position: sticky;

@@ -4,25 +4,44 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Your Result | GoCredi</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='img/favicon.ico') }}" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="{{ url_for('static', filename='img/favicon.ico') }}"
+    />
   </head>
 
   <body>
-
     <!-- Navbar -->
     <nav class="navbar">
       <div class="logo">
-        <img src="{{ url_for('static', filename='img/logo-white.png') }}" alt="GoCredi Logo" />
-        <span style="font-weight: bold; color: #fff; font-size: 22px">GoCredi</span>
+        <img
+          src="{{ url_for('static', filename='img/logo-white.png') }}"
+          alt="GoCredi Logo"
+        />
+        <span style="font-weight: bold; color: #fff; font-size: 22px"
+          >GoCredi</span
+        >
       </div>
       <input type="checkbox" id="nav-toggle" class="nav-toggle-cb" />
-      <label for="nav-toggle" class="nav-toggle-btn"><i class="fas fa-bars"></i></label>
+      <label for="nav-toggle" class="nav-toggle-btn"
+        ><i class="fas fa-bars"></i
+      ></label>
       <ul>
         <li><a href="/">Home</a></li>
-        <li><a href="/about">About CrediCard</a></li>
+        <li><a href="/about">How It Works</a></li>
         <li><a href="/aboutus">About Us</a></li>
         <li><a href="/contact">Contact Us</a></li>
       </ul>
@@ -36,7 +55,6 @@
 
     <!-- Result Card -->
     <div class="result-container">
-
       <!-- Verdict -->
       <div class="result-verdict">
         {% if prediction == 1 %}
@@ -48,7 +66,9 @@
           <i class="fas fa-circle-xmark"></i> Not Approved
         </p>
         {% endif %}
-        <span class="risk-badge risk-{{ risk_level | lower }}">{{ risk_level }} Risk</span>
+        <span class="risk-badge risk-{{ risk_level | lower }}"
+          >{{ risk_level }} Risk</span
+        >
       </div>
 
       <!-- Probability Score -->
@@ -69,13 +89,25 @@
       <!-- Contextual Advice -->
       <div class="result-advice">
         {% if prediction == 1 and risk_level == "Low" %}
-        <p>Your financial profile is strong. You are a good candidate for approval.</p>
+        <p>
+          Your financial profile is strong. You are a good candidate for
+          approval.
+        </p>
         {% elif prediction == 1 and risk_level == "Medium" %}
-        <p>You are likely to be approved, but improving your income or employment stability could strengthen your profile.</p>
+        <p>
+          You are likely to be approved, but improving your income or employment
+          stability could strengthen your profile.
+        </p>
         {% elif prediction == 0 and risk_level == "Medium" %}
-        <p>Your profile is borderline. Improving your income or employment duration could increase your chances.</p>
+        <p>
+          Your profile is borderline. Improving your income or employment
+          duration could increase your chances.
+        </p>
         {% else %}
-        <p>Your approval chances are currently low. Focus on increasing income, employment stability, and assets before reapplying.</p>
+        <p>
+          Your approval chances are currently low. Focus on increasing income,
+          employment stability, and assets before reapplying.
+        </p>
         {% endif %}
       </div>
 
@@ -102,7 +134,6 @@
           <i class="fas fa-rotate-right"></i> Try Again
         </a>
       </div>
-
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -128,6 +159,5 @@
         }
       });
     </script>
-
   </body>
 </html>

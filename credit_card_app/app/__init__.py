@@ -1,6 +1,7 @@
 from flask import Flask, render_template
 from .routes import main
 from .services.prediction_service import load_pipeline
+from config import Config
 import logging
 import os
 
@@ -14,11 +15,12 @@ _LOGS_DIR = os.path.join(_APP_ROOT, "logs")
 
 def create_app():
     app = Flask(__name__)
+    app.config.from_object(Config)
 
-    # تحميل المودل
+    # Load ML pipeline
     app.config["PIPELINE"] = load_pipeline(_PIPELINE_PATH)
 
-    # إعداد logging
+    # Configure logging
     if not os.path.exists(_LOGS_DIR):
         os.mkdir(_LOGS_DIR)
 

@@ -103,7 +103,7 @@
 }
 
 .content-card-title {
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 700;
   color: #0a2540;
   margin: 0 0 16px;
@@ -138,7 +138,7 @@
 
 .team-card {
   background: #f8fbff;
-  border-radius: 14px;
+  border-radius: 16px;
   border: 1px solid #e8eef8;
   padding: 24px 20px;
   flex: 1;

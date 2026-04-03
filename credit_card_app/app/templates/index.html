@@ -114,7 +114,7 @@
       ></label>
       <ul>
         <li><a href="/">Home</a></li>
-        <li><a href="/about">About GoCredi</a></li>
+        <li><a href="/about">How It Works</a></li>
         <li><a href="/aboutus">About Us</a></li>
         <li><a href="/contact">Contact Us</a></li>
       </ul>
@@ -122,21 +122,30 @@
 
     <!-- Hero Section -->
     <section class="hero">
-      <div class="hero-badge">ML-Powered Credit Evaluation</div>
+      <div class="hero-content">
+        <div class="hero-badge">ML-Powered Credit Evaluation</div>
 
-      <h1 class="hero-title">
-        Know Your <span class="hero-highlight">Approval Odds</span><br />
-        Before You Apply
-      </h1>
+        <h1 class="hero-title">
+          Know Your <span class="hero-highlight">Approval Odds</span><br />
+          Before You Apply
+        </h1>
 
-      <p class="hero-sub">
-        Instant credit approval probability — with a risk rating and the key
-        factors behind your result.
-      </p>
+        <p class="hero-sub">
+          Instant credit approval probability — with a risk rating and the key
+          factors behind your result.
+        </p>
 
-      <div class="hero-actions">
-        <a href="/form" class="start-btn">Check My Eligibility</a>
-        <a href="/about" class="hero-link-btn">How It Works</a>
+        <div class="hero-actions">
+          <a href="/form" class="start-btn">Check My Eligibility</a>
+          <a href="/about" class="hero-link-btn">How It Works</a>
+        </div>
+      </div>
+
+      <div class="hero-image">
+        <img
+          src="{{ url_for('static', filename='img/credit-card-hero.png') }}"
+          alt="Credit card illustration"
+        />
       </div>
     </section>
 
@@ -225,6 +234,15 @@
         document.getElementById("modal-low").textContent = (
           current - 0.05
         ).toFixed(2);
+
+        const change = parseFloat(((current % 0.1) - 0.05).toFixed(2));
+        const changeEl = document.getElementById("modal-change");
+        changeEl.textContent = (change >= 0 ? "+" : "") + change.toFixed(2);
+        changeEl.className =
+          change >= 0 ? "modal-change-positive" : "modal-change-negative";
+        document.getElementById("modal-change-icon").className =
+          change >= 0 ? "fas fa-arrow-up" : "fas fa-arrow-down";
+
         document.getElementById("currencyModal").style.display = "block";
       }
       function closeCurrencyModal() {
@@ -243,15 +261,51 @@
 
     <!--The first eddition was without the currency prices I'm added it -->
 
-    <!-- 💬 Modal لعرض تفاصيل العملة -->
+    <!-- Currency Detail Modal -->
     <div id="currencyModal" class="modal">
-      <div class="modal-content">
-        <span class="close" onclick="closeCurrencyModal()">&times;</span>
-        <h3 id="modal-title">JOD/ILS</h3>
-
-        <p><strong>Live Rate:</strong> <span id="modal-current">—</span> 💰</p>
-        <p><strong> Hour High-24:</strong> <span id="modal-high">—</span> 📈</p>
-        <p><strong>Hour Low-24</strong> <span id="modal-low">—</span> 📉</p>
+      <div class="currency-modal-content">
+        <button class="currency-modal-close" onclick="closeCurrencyModal()">
+          <i class="fas fa-xmark"></i>
+        </button>
+        <div class="currency-modal-header">
+          <div class="currency-modal-icon">
+            <i class="fas fa-money-bill-transfer"></i>
+          </div>
+          <div>
+            <p class="currency-modal-label">Exchange Rate</p>
+            <h3 id="modal-title">JOD/ILS</h3>
+          </div>
+        </div>
+        <div class="currency-stats">
+          <div class="currency-stat-card">
+            <div class="currency-stat-top">
+              <i class="fas fa-coins"></i>
+              <span>Live Rate</span>
+            </div>
+            <strong id="modal-current">—</strong>
+          </div>
+          <div class="currency-stat-card">
+            <div class="currency-stat-top">
+              <i class="fas fa-arrow-trend-up"></i>
+              <span>24h High</span>
+            </div>
+            <strong id="modal-high">—</strong>
+          </div>
+          <div class="currency-stat-card">
+            <div class="currency-stat-top">
+              <i class="fas fa-arrow-trend-down"></i>
+              <span>24h Low</span>
+            </div>
+            <strong id="modal-low">—</strong>
+          </div>
+          <div class="currency-stat-card">
+            <div class="currency-stat-top">
+              <i id="modal-change-icon" class="fas fa-arrow-up"></i>
+              <span>24h Change</span>
+            </div>
+            <strong id="modal-change">—</strong>
+          </div>
+        </div>
       </div>
     </div>
     <footer class="site-footer">

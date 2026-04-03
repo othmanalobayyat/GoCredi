@@ -1,6 +1,6 @@
 # GoCredi — Credit Card Approval Prediction
 
-## A production-style machine learning system for credit card approval prediction, featuring risk scoring, explainability, and a REST API.
+A production-style Flask + machine learning application that predicts credit card approval likelihood from a user's financial profile. Built on a trained Random Forest pipeline with SMOTE-based class balancing, the system returns an approval probability, a risk tier, and the top model factors behind the result — all through a clean web UI and a JSON REST API.
 
 ## Key Features
 
@@ -178,13 +178,32 @@ GoCreadi/
 │       ├── services/
 │       │   └── prediction_service.py # predict_credit(), feature importance
 │       ├── static/
-│       │   ├── css/style.css
+│       │   ├── css/
+│       │   │   ├── style.css         # Entry point — imports all modules below
+│       │   │   ├── base.css          # Variables, reset, typography
+│       │   │   ├── navbar.css
+│       │   │   ├── hero.css
+│       │   │   ├── ticker.css
+│       │   │   ├── cards.css
+│       │   │   ├── form.css
+│       │   │   ├── result.css
+│       │   │   ├── pages.css         # Shared inner-page layouts
+│       │   │   ├── modal.css
+│       │   │   └── responsive.css
+│       │   ├── js/
+│       │   │   ├── main.js
+│       │   │   └── currency.js
 │       │   └── img/
 │       └── templates/
+│           ├── base.html             # Shared layout (extends all inner pages)
+│           ├── index.html            # Landing page
 │           ├── form.html             # Input form
 │           ├── result.html           # Prediction result
+│           ├── about.html
+│           ├── aboutus.html
+│           ├── contact.html
 │           ├── error.html
-│           └── partials/             # Navbar, currency ticker
+│           └── partials/             # navbar, footer, ticker, modals
 ├── model_artifacts/
 │   └── pipeline.pkl                  # Trained pipeline (6.4 MB)
 ├── notebooks/
@@ -214,7 +233,7 @@ Place both files in the `data/` directory before running the training notebook.
 - **Per-prediction explainability** — replace global feature importance with SHAP values
 - **Unit and integration tests** — currently no test coverage
 - **Deployment** — host on Render or Railway for a live demo URL
-- **Contact form persistence** — store or forward submitted messages instead of discarding
+- **Contact form** — functional via EmailJS; direct email delivery with no backend dependency
 
 ---
 

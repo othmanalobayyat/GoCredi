@@ -91,8 +91,13 @@
 
 /* ── error.html ─────────────────────────────────────────────────── */
 .error-page {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   text-align: center;
-  padding: 80px 20px 100px;
+  padding: 80px 20px;
 }
 
 .error-icon {
@@ -112,4 +117,94 @@
   font-size: 16px;
   color: #6b7280;
   margin: 0 0 32px;
+}
+
+.page-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── contact.html ───────────────────────────────────────────────── */
+.contact-wrap {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 24px 20px 60px;
+}
+
+.contact-card {
+  width: 100%;
+  max-width: 720px;
+  padding: 40px 48px;
+  margin: 0 auto;
+}
+
+.contact-card .form-group {
+  margin-bottom: 20px;
+}
+
+.contact-card input[type="text"],
+.contact-card input[type="email"],
+.contact-card textarea {
+  width: 100%;
+  padding: 11px 14px;
+  border-radius: 10px;
+  border: 1.5px solid #d1d5db;
+  font-size: 14px;
+  font-family: var(--font);
+  color: #1f2937;
+  background: #fff;
+  box-sizing: border-box;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+
+.contact-card textarea {
+  resize: vertical;
+}
+
+.contact-card input[type="text"]:focus,
+.contact-card input[type="email"]:focus,
+.contact-card textarea:focus {
+  outline: none;
+  border-color: var(--primary-dark);
+  box-shadow: 0 0 0 3px rgba(0, 140, 255, 0.1);
+}
+
+.contact-submit {
+  text-align: center;
+  margin-top: 8px;
+}
+
+.contact-submit-btn {
+  border: none;
+  cursor: pointer;
+  font-family: var(--font);
+}
+
+.contact-feedback {
+  display: none;
+  margin-top: 20px;
+  padding: 13px 18px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 500;
+  text-align: center;
+}
+
+.contact-feedback--success {
+  display: block;
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+.contact-feedback--error {
+  display: block;
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
 }
