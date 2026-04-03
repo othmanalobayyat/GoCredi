@@ -4,8 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}GoCredi{% endblock %}</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='img/favicon.ico') }}" />
 </head>
 <body>
   {% if show_ticker %}
@@ -14,16 +16,12 @@
 
   {% include 'partials/navbar.html' %}
 
-
   <main>
     {% block content %}{% endblock %}
   </main>
 
+  <footer class="site-footer">
+    <span>GoCredi &copy; 2025 &nbsp;&middot;&nbsp; Palestine Ahliya University</span>
+  </footer>
 </body>
 </html>
-
-
-
-
-
-

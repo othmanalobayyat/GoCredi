@@ -1,0 +1,354 @@
+/*Form.HTML Styles*/
+.container {
+  max-width: 750px;
+  margin: 50px auto;
+  background: #f6fafd;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+  align-items: flex-start;
+}
+
+.container h2 {
+  font-size: 24px;
+  color: var(--primary-dark);
+  background: #f0f8ff;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 30px;
+}
+
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.form-group.half {
+  flex: 1 1 48%;
+}
+
+/* شكل أنيق للـ Radio Buttons */
+.inline-options input[type="radio"] {
+  accent-color: var(--primary-dark);
+  /* لون أزرق مناسب */
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  margin-left: 6px;
+}
+
+.inline-options label {
+  font-size: 15px;
+  color: #333;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+  appearance: none;
+  background-color: #fff;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg fill='%23008cff' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 18px;
+}
+
+/*نافذة شرح الخصائص (ℹ️)*/
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+  background-color: #fff;
+  margin: 10% auto;
+  padding: 30px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 480px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  align-items: center;
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover {
+  color: red;
+  cursor: pointer;
+}
+
+/* ── form.html ───────────────────────────────────────────────────── */
+.form-container {
+  margin-top: 16px;
+  margin-bottom: 60px;
+}
+
+/* section labels inside the form card */
+.form-section-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  color: var(--primary-dark);
+  margin: 0 0 16px;
+}
+
+/* thin rule between sections */
+.form-divider {
+  border: none;
+  border-top: 1px solid #e9ecef;
+  margin: 26px 0 28px;
+}
+
+/* form-row items fill width equally on desktop */
+.form-container .form-row {
+  align-items: flex-start;
+}
+
+/* space between consecutive rows in the same section (numbers section) */
+.form-container .form-row + .form-row {
+  margin-top: 20px;
+}
+
+.form-container .form-row .form-group {
+  flex: 1;
+  min-width: 160px;
+  margin-bottom: 0;
+}
+
+/* field labels */
+.field-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+/* info icon */
+.field-info {
+  cursor: pointer;
+  color: var(--primary-dark);
+  margin-left: 4px;
+  font-size: 12px;
+  opacity: 0.6;
+  transition: opacity 0.15s;
+}
+.field-info:hover {
+  opacity: 1;
+}
+
+/* inputs */
+.form-container input[type="number"] {
+  width: 100%;
+  padding: 11px 14px;
+  border-radius: 10px;
+  border: 1.5px solid #d1d5db;
+  font-size: 14px;
+  font-family: var(--font);
+  color: #1f2937;
+  background: #fff;
+  box-sizing: border-box;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+
+.form-container input[type="number"]:focus {
+  outline: none;
+  border-color: var(--primary-dark);
+  box-shadow: 0 0 0 3px rgba(0, 140, 255, 0.1);
+}
+
+/* selects — override the global rule inside form-container */
+.form-container select {
+  padding: 11px 14px;
+  border-radius: 10px;
+  border: 1.5px solid #d1d5db;
+  font-size: 14px;
+  font-family: var(--font);
+  color: #1f2937;
+  box-sizing: border-box;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+
+.form-container select:focus {
+  outline: none;
+  border-color: var(--primary-dark);
+  box-shadow: 0 0 0 3px rgba(0, 140, 255, 0.1);
+}
+
+/* radio pill buttons */
+.radio-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.radio-option {
+  position: relative;
+  cursor: pointer;
+}
+
+.radio-option input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.radio-option span {
+  display: inline-block;
+  padding: 9px 22px;
+  border-radius: 10px;
+  border: 1.5px solid #d1d5db;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  background: #fff;
+  transition:
+    border-color 0.15s,
+    background 0.15s,
+    color 0.15s;
+  user-select: none;
+}
+
+.radio-option input[type="radio"]:checked + span {
+  background: #ebf5ff;
+  border-color: var(--primary-dark);
+  color: var(--primary-dark);
+  font-weight: 600;
+}
+
+.radio-option span:hover {
+  border-color: #93c5fd;
+  background: #f8fbff;
+}
+
+/* submit area */
+.form-footer {
+  text-align: center;
+  margin-top: 36px;
+  padding-top: 24px;
+  border-top: 1px solid #e9ecef;
+}
+
+.form-submit-btn {
+  border: none;
+  cursor: pointer;
+  font-family: var(--font);
+  font-size: 16px;
+}
+
+/*contact.HTML Styles*/
+.form-group textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  resize: vertical;
+}
+
+/* ── contact.html ───────────────────────────────────────────────── */
+.contact-wrap {
+  max-width: 560px;
+  margin: 0 auto 60px;
+  padding: 0 20px;
+}
+
+.contact-card {
+  padding: 36px 40px;
+}
+
+.contact-card .form-group {
+  margin-bottom: 20px;
+}
+
+.contact-card input[type="text"],
+.contact-card input[type="email"] {
+  width: 100%;
+  padding: 11px 14px;
+  border-radius: 10px;
+  border: 1.5px solid #d1d5db;
+  font-size: 14px;
+  font-family: var(--font);
+  color: #1f2937;
+  background: #fff;
+  box-sizing: border-box;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+
+.contact-card input[type="text"]:focus,
+.contact-card input[type="email"]:focus,
+.contact-card textarea:focus {
+  outline: none;
+  border-color: var(--primary-dark);
+  box-shadow: 0 0 0 3px rgba(0, 140, 255, 0.1);
+}
+
+.contact-card textarea {
+  width: 100%;
+  padding: 11px 14px;
+  border-radius: 10px;
+  border: 1.5px solid #d1d5db;
+  font-size: 14px;
+  font-family: var(--font);
+  color: #1f2937;
+  background: #fff;
+  box-sizing: border-box;
+  resize: vertical;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+
+.contact-submit {
+  text-align: center;
+  margin-top: 8px;
+}
+
+.contact-submit-btn {
+  border: none;
+  cursor: pointer;
+  font-family: var(--font);
+}

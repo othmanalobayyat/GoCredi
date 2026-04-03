@@ -1,9 +1,15 @@
-
 <nav class="navbar">
   <div class="logo">
-    <img src="{{ url_for('static', filename='img/logo-white.png') }}" alt="GoCredi Logo">
-    <span style="font-weight: bold; color: #FFF; font-size: 22px;">GoCredi</span>
+    <img
+      src="{{ url_for('static', filename='img/logo-white.png') }}"
+      alt="GoCredi Logo"
+    />
+    <span style="font-weight: bold; color: #fff; font-size: 22px">GoCredi</span>
   </div>
+  <input type="checkbox" id="nav-toggle" class="nav-toggle-cb" />
+  <label for="nav-toggle" class="nav-toggle-btn"
+    ><i class="fas fa-bars"></i
+  ></label>
   <ul>
     <li><a href="/">Home</a></li>
     <li><a href="/about">About GoCredi</a></li>

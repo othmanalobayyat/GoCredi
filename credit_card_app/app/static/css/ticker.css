@@ -1,0 +1,84 @@
+/* 🔺 Currency Ticker */
+.ticker {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  overflow-x: auto;
+  overflow-y: hidden;
+  gap: 8px;
+  padding: 12px 10%;
+  background: linear-gradient(135deg, #f8fbff 0%, #e8f4fd 100%);
+  border-bottom: 1px solid rgba(0, 180, 255, 0.1);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  white-space: nowrap;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 180, 255, 0.2) transparent;
+}
+
+/* Scrollbar styling for webkit browsers */
+.ticker::-webkit-scrollbar {
+  height: 4px;
+}
+
+.ticker::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.ticker::-webkit-scrollbar-thumb {
+  background: rgba(0, 180, 255, 0.2);
+  border-radius: 2px;
+}
+
+.ticker::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 180, 255, 0.4);
+}
+
+.ticker-inner {
+  display: inline-flex;
+  gap: 8px;
+  flex-wrap: nowrap;
+}
+
+.ticker .pair {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 180, 255, 0.15);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 13px;
+  font-weight: 500;
+  color: #1a365d;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.ticker .pair:hover {
+  background: rgba(0, 180, 255, 0.05);
+  border-color: rgba(0, 180, 255, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 180, 255, 0.15);
+  color: var(--primary-dark);
+}
+
+.ticker .pair:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 180, 255, 0.1);
+}
+
+/* Remove individual currency color backgrounds - keep consistent */
+/* All pairs now use the same clean styling */
+
+.flag-icon {
+  width: 20px;
+  height: 14px;
+  margin-right: 6px;
+  border-radius: 3px;
+  object-fit: cover;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+}

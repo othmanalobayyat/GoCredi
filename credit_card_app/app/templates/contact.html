@@ -1,79 +1,88 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Contact Us | GoCredi</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='img/favicon.ico') }}?v=2" />
+  </head>
 
-<head>
-  <meta charset="UTF-8">
-  <title>Contact Us | GoCredi</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-  <!-- Favicon -->
-  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='img/favicon.ico') }}?v=2">
-</head>
+  <body>
 
-<body>
+    <nav class="navbar">
+      <div class="logo">
+        <img src="{{ url_for('static', filename='img/logo-white.png') }}" alt="GoCredi Logo" />
+        <span style="font-weight: bold; color: #fff; font-size: 22px">GoCredi</span>
+      </div>
+      <input type="checkbox" id="nav-toggle" class="nav-toggle-cb" />
+      <label for="nav-toggle" class="nav-toggle-btn"><i class="fas fa-bars"></i></label>
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/about">About CrediCard</a></li>
+        <li><a href="/aboutus">About Us</a></li>
+        <li><a href="/contact">Contact Us</a></li>
+      </ul>
+    </nav>
 
-  <!-- Navbar -->
-  <nav class="navbar">
-    <div class="logo">
-      <img src="{{ url_for('static', filename='img/logo-white.png') }}" alt="GoCredi Logo">
-      <span style="font-weight: bold; color: #FFF; font-size: 22px;">GoCredi</span>
+    <div class="page-header">
+      <p class="page-label">Get in Touch</p>
+      <h1 class="page-title">Contact Us</h1>
+      <p class="page-sub">Send us a message and we will get back to you.</p>
     </div>
-    <ul>
-      <li><a href="/">Home</a></li>
-      <li><a href="/about">About CrediCard</a></li>
-      <li><a href="/aboutus">About Us</a></li>
-      <li><a href="/contact">Contact Us</a></li>
-    </ul>
-  </nav>
 
-  <!-- Contact Form -->
-  <div class="container">
-    <h2 style="text-align:center;">Contact Us </h2>
-    <form id="contact-form">
-      <div class="form-group">
-        <label for="name">Name:</label>
-        <input type="text" id="name" name="name" required>
+    <div class="contact-wrap">
+      <div class="content-card contact-card">
+        <form id="contact-form">
+          <div class="form-group">
+            <label class="field-label" for="name">Name</label>
+            <input type="text" id="name" name="name" placeholder="Your full name" required />
+          </div>
+          <div class="form-group">
+            <label class="field-label" for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="your@email.com" required />
+          </div>
+          <div class="form-group">
+            <label class="field-label" for="message">Message</label>
+            <textarea id="message" name="message" rows="5" placeholder="Write your message here..." required></textarea>
+          </div>
+          <div class="contact-submit">
+            <button type="submit" class="start-btn contact-submit-btn">
+              <i class="fas fa-paper-plane"></i> Send Message
+            </button>
+          </div>
+        </form>
       </div>
-      <div class="form-group">
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required>
-      </div>
-      <div class="form-group">
-        <label for="message">Message:</label>
-        <textarea id="message" name="message" rows="5" required></textarea>
-      </div>
-      <div style="text-align:center; margin-top: 20px;">
-        <button type="submit" class="start-btn">Send</button>
-      </div>
-    </form>
+    </div>
 
-  </div>
-  <script>
-    document.getElementById("contact-form").addEventListener("submit", async function (e) {
-      e.preventDefault(); // منع الإرسال التقليدي
+    <footer class="site-footer">
+      <span>GoCredi &copy; 2025 &nbsp;&middot;&nbsp; Palestine Ahliya University</span>
+    </footer>
 
-      const form = e.target;
-      const formData = new FormData(form);
-
-      try {
-        const response = await fetch("/contact", {
-          method: "POST",
-          body: formData
-        });
-
-        if (response.ok) {
-          alert("✅ Your message has been sent successfully.");
-          form.reset(); // مسح الحقول
-        } else {
-          alert("❌ Failed to send message.");
+    <script>
+      document.getElementById("contact-form").addEventListener("submit", async function (e) {
+        e.preventDefault();
+        const form = e.target;
+        const formData = new FormData(form);
+        try {
+          const response = await fetch("/contact", {
+            method: "POST",
+            body: formData
+          });
+          if (response.ok) {
+            alert("Your message has been sent successfully.");
+            form.reset();
+          } else {
+            alert("Failed to send message.");
+          }
+        } catch (error) {
+          alert("Error occurred. Try again later.");
+          console.error(error);
         }
+      });
+    </script>
 
-      } catch (error) {
-        alert("❌ Error occurred. Try again later.");
-        console.error(error);
-      }
-    });
-  </script>
-
-</body>
-
+  </body>
 </html>

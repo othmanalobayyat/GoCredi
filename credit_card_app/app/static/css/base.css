@@ -1,0 +1,24 @@
+:root {
+  --primary: #00b4ff;
+  --primary-dark: #008cff;
+  --bg: #f6fafd;
+  --text: #222;
+  --font: "Poppins", sans-serif;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  overflow-x: hidden;
+}
