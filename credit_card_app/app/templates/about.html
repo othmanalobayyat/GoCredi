@@ -4,7 +4,7 @@ block content %}
 <div class="page-header">
   <p class="page-label">How It Works</p>
   <h1 class="page-title">How GoCredi Works</h1>
-  <p class="page-sub">Understanding the model behind your credit evaluation</p>
+  <p class="page-sub">The model and methodology behind your credit evaluation</p>
 </div>
 
 <div class="about-content">
@@ -15,8 +15,8 @@ block content %}
 
     <p>
       GoCredi uses a <strong>Random Forest</strong> classifier trained on real
-      credit card application data. The model evaluates your personal and
-      financial profile to estimate the likelihood of credit card approval.
+      credit card application data. It evaluates your personal and financial
+      profile to estimate the likelihood of approval.
     </p>
 
     <p>The training pipeline includes:</p>
@@ -24,20 +24,20 @@ block content %}
     <ul class="about-list">
       <li>
         <i class="fas fa-check-circle"></i> <strong>StandardScaler</strong> —
-        normalizes numerical inputs
+        normalizes numerical inputs to a consistent scale
       </li>
       <li>
         <i class="fas fa-check-circle"></i> <strong>OneHotEncoder</strong> —
-        encodes categorical features
+        converts categorical values into numerical features
       </li>
       <li>
-        <i class="fas fa-check-circle"></i> <strong>SMOTE</strong> — balances
-        the training dataset
+        <i class="fas fa-check-circle"></i> <strong>SMOTE</strong> —
+        balances the training data to reduce class bias
       </li>
       <li>
         <i class="fas fa-check-circle"></i>
-        <strong>RandomizedSearchCV</strong> — used during experimentation for
-        model evaluation and tuning
+        <strong>RandomizedSearchCV</strong> — tunes hyperparameters for optimal
+        model performance
       </li>
     </ul>
   </div>
@@ -47,7 +47,9 @@ block content %}
       <i class="fas fa-table-list"></i> Input Features
     </h2>
 
-    <p>The model uses 10 features selected for predictive performance:</p>
+    <p>
+      The model relies on 10 features chosen for strong predictive value:
+    </p>
 
     <div class="feature-tags">
       <span class="feature-tag">Gender</span>
@@ -68,24 +70,24 @@ block content %}
       <i class="fas fa-chart-bar"></i> What You Get
     </h2>
 
-    <p>After submitting your information, GoCredi provides:</p>
+    <p>Each result includes four outputs to help you understand your evaluation:</p>
 
     <ul class="about-list">
       <li>
         <i class="fas fa-circle-check"></i>
-        <strong>Approved / Not Approved</strong> — model prediction
+        <strong>Approval Decision</strong> — Approved or Not Approved
       </li>
       <li>
-        <i class="fas fa-shield-halved"></i> <strong>Risk Level</strong> — Low,
-        Medium, or High
+        <i class="fas fa-shield-halved"></i>
+        <strong>Risk Level</strong> — Low, Medium, or High risk classification
       </li>
       <li>
-        <i class="fas fa-percent"></i> <strong>Probability breakdown</strong> —
-        acceptance vs rejection
+        <i class="fas fa-percent"></i>
+        <strong>Probability Breakdown</strong> — approval and rejection percentages
       </li>
       <li>
-        <i class="fas fa-lightbulb"></i> <strong>Top model factors</strong> —
-        the most influential features globally (not per-user explanation)
+        <i class="fas fa-lightbulb"></i>
+        <strong>Top Model Factors</strong> — the three features most influential to the prediction
       </li>
     </ul>
   </div>
