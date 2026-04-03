@@ -287,3 +287,12 @@ This repository contains a substantially reworked and extended version of an ear
 ---
 
 _Palestine Ahliya University — programming Project, 2025_
+
+---
+
+## License
+
+This project is proprietary and is provided for portfolio purposes only.
+
+Unauthorized use, copying, or distribution of this code is not allowed.
+See the LICENSE file for details.
