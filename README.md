@@ -166,25 +166,28 @@ The app will be available at `http://127.0.0.1:5000`.
 ## Deployment (Render)
 
 **Build command:**
+
 ```
 pip install -r credit_card_app/requirements.txt
 ```
 
 **Start command:**
+
 ```
 gunicorn --chdir credit_card_app "app:create_app()"
 ```
 
 **Required environment variables:**
 
-| Variable | Value |
-| -------- | ----- |
-| `SECRET_KEY` | A strong random secret key |
-| `PYTHON_VERSION` | `3.11.9` |
+| Variable         | Value                      |
+| ---------------- | -------------------------- |
+| `SECRET_KEY`     | A strong random secret key |
+| `PYTHON_VERSION` | `3.11.9`                   |
 
 > **Note:** `pipeline.pkl` was serialized with scikit-learn 1.6.1 on Python 3.11. Setting `PYTHON_VERSION=3.11.9` on Render is required — loading the pipeline on any other Python version will raise a `_RemainderColsList` error and crash the app on startup.
 
 Generate a secure `SECRET_KEY` with:
+
 ```bash
 python -c "import secrets; print(secrets.token_hex(32))"
 ```
@@ -260,6 +263,7 @@ Place both files in the `data/` directory before running the training notebook.
 
 ![Landing page](screenshots/landing.png)
 ![Prediction form](screenshots/form.png)
+![Result page](screenshots/result.png)
 
 ---
 
